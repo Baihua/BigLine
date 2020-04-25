@@ -44,15 +44,15 @@ Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f
 	}
 	else
 	{
-		float f = get_random_float();
-		if (f < kr) {
-			//选用反射；
-			wi = reflect(-wo, N);
-			pdf = kr;
-			return kr * reflectance / fabs(dotProduct(N, wi));
+		//float f = get_random_float();
+		//if (f < kr) {
+		//	//选用反射；
+		//	wi = reflect(-wo, N);
+		//	pdf = kr;
+		//	return kr * reflectance / fabs(dotProduct(N, wi));
 
-		}
-		else
+		//}
+		//else
 		{	//选用折射
 			pdf = 1 - kr;
 			wi = refract(-wo, N, ior);

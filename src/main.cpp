@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(64, 4);//设置SPP与线程数
+	r.SetSomeSetting(8, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

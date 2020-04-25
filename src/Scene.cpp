@@ -107,7 +107,15 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 		Intersection intersect = this->intersect(r);
 		if (intersect.happened && !intersect.obj->hasEmit())
 		{
+			if (intersect.obj->hasEmit())
+			{
+				L_indir = intersect.emit * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
+
+			}
+			else {
+
 			L_indir = castRay(r, 0) * value *  fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
+			}
 		}
 	}
 	return L_dir + L_indir;
