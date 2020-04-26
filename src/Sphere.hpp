@@ -56,7 +56,7 @@ public:
         float t0, t1;
         if (!solveQuadratic(a, b, c, t0, t1)) return result;
         
-        return result;
+        //return result;
 
         if (t0 < ray.t_min) t0 = t1;
         if (t0 < ray.t_min) return result;
