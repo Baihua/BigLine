@@ -14,7 +14,7 @@ public:
 	// given a ray, calculate the contribution of this ray
 	virtual inline Vector3f eval(const Vector3f& wi, const Vector3f& wo, const Vector3f& N);
 	virtual inline Vector3f Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f& N, float& pdf);
-	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) { 
+	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) {
 		return Vector3f(0);
 	}
 
@@ -36,28 +36,32 @@ Vector3f MateialGlass::eval(const Vector3f& wi, const Vector3f& wo, const Vector
 Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f& N, float& pdf)
 {
 	float kr = 1;
-	this->fresnel(wo, N, ior, kr);
-	if (kr > 0.999) {
+	if (!refract(-wo, N, wi, ior)) {
 		wi = reflect(-wo, N);
 		pdf = 1;
 		return reflectance / fabs(dotProduct(N, wi));
 	}
 	else
 	{
-		//float f = get_random_float();
-		//if (f < kr) {
-		//	//选用反射；
-		//	wi = reflect(-wo, N);
-		//	pdf = kr;
-		//	return kr * reflectance / fabs(dotProduct(N, wi));
+		this->fresnel(wo, N, ior, kr);
+		float f = get_random_float();
+		if (f < kr) {
+			//选用反射；
+			wi = reflect(-wo, N);
+			pdf = kr;
+			//printf("-ffff\n");
+			return kr * reflectance / fabs(dotProduct(N, wi));
 
-		//}
-		//else
+		}
+		else
 		{	//选用折射
 			pdf = 1 - kr;
-			wi = refract(-wo, N, ior);
 			bool enter = dotProduct(wo, N) > 0;
-			float v = enter ? ior *ior:1 / (ior * ior)  ;
+			float v = enter ? ior * ior : 1 / (ior * ior);
+			if (enter)
+			{
+				printf("\nadfn\n");
+			}
 			return v * (1 - kr) * reflectance / fabs(dotProduct(N, wi));
 		}
 

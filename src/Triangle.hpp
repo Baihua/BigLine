@@ -232,9 +232,9 @@ inline Bounds3 Triangle::getBounds() { return Union(Bounds3(v0, v1), v2); }
 inline Intersection Triangle::getIntersection(Ray ray)
 {
 	Intersection inter;
-
-	if (dotProduct(ray.direction, normal) > 0)
-		return inter;
+//	int dir = dotProduct(ray.direction, normal) > 0 ? -1: 1;
+	//if (dotProduct(ray.direction, normal) > 0)
+	//	return inter;
 	double u, v, t_tmp = 0;
 	Vector3f pvec = crossProduct(ray.direction, e2);
 	double det = dotProduct(e1, pvec);
@@ -251,17 +251,17 @@ inline Intersection Triangle::getIntersection(Ray ray)
 	if (v < 0 || u + v > 1)
 		return inter;
 	t_tmp = dotProduct(e2, qvec) * det_inv;
-
-	// TODO find ray triangle intersection
-	//if (fabs(t_tmp - ray.t_min) < EPSILON)
-	if (t_tmp < ray.t_min)
+	if (t_tmp < ray.t_min + EPSILON)
 		return inter;
+	if (t_tmp + EPSILON > ray.t_max)
+		return inter;
+	//if (t_tmp - ray.t_min < EPSILON)
 
 	inter.happened = true;
 	inter.coords = ray.origin + t_tmp * ray.direction;
 	inter.m = m;
 	inter.distance = t_tmp;
-	inter.normal = normal;
+	inter.normal = normal;// *dir;
 	inter.obj = this;
 	return inter;
 }

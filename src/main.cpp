@@ -17,8 +17,8 @@ int main(int argc, char** argv)
 
 	// Change the definition here to change resolution
 	//Scene scene(784, 784);
-	Scene scene(512, 512);
-	//Scene scene(256, 256);
+	//Scene scene(512, 512);
+	Scene scene(256, 256);
 
 	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
 	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
@@ -49,11 +49,11 @@ int main(int argc, char** argv)
 	MeshTriangle glassShortbox("./models/cornellbox/shortbox.obj", glass);
 
 	//测试mirror grass
-	Sphere* sp = new Sphere(Vector3f(300, 100, 300), 100, glass);
+	Sphere* sp = new Sphere(Vector3f(300, 100, 300), 100, red);
 	scene.Add(&floor);
 	//scene.Add(&mirrorTallbox);
-	//scene.Add(sp);
-	scene.Add(&glassShortbox);
+	scene.Add(sp);
+	//scene.Add(&glassShortbox);
 	scene.Add(&left);
 	scene.Add(&right);
 	scene.Add(&light_);
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(8, 4);//设置SPP与线程数
+	r.SetSomeSetting(4, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 
@@ -104,6 +104,6 @@ int main(int argc, char** argv)
 	std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::hours>(stop - start).count() << " hours\n";
 	std::cout << "          : " << std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() << " minutes\n";
 	std::cout << "          : " << std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() << " seconds\n";
-
+	system("pause");
 	return 0;
 }

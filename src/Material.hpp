@@ -46,6 +46,22 @@ public:
 		return k < 0 ? 0 : eta * I + (eta * cosi - sqrtf(k)) * n;
 	}
 
+	bool refract(const Vector3f& I, const Vector3f& N, Vector3f& R, const float& ior)
+	{
+		float cosi = clamp(-1, 1, dotProduct(I, N));
+		float etai = 1, etat = ior;
+		Vector3f n = N;
+		if (cosi < 0) { cosi = -cosi; }
+		else { std::swap(etai, etat); n = -N; }
+		float eta = etai / etat;
+		float k = 1 - eta * eta * (1 - cosi * cosi);
+
+		if (k < 0)
+			return false;
+		R = eta * I + (eta * cosi - sqrtf(k)) * n;
+		return true;
+	}
+
 	// Compute Fresnel equation
 	//
 	// \param I is the incident view direction

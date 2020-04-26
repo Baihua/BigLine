@@ -85,10 +85,13 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 
 	float distance = (p - x).norm();
 
-	Ray hitTest(p, ws, distance);
+	Ray hitTest(p, ws);
+	hitTest.t_min = 0; hitTest.t_max = distance;
 	Intersection hit = intersect(hitTest);
-	Vector3f L_dir;
-	if (!hit.happened || fabs(hit.distance - distance) < EPSILON) {
+	Vector3f L_dir;//!hit.happened ||fabs(hit.distance - distance) < EPSILON
+	//sprintf("\n")
+	if (!hit.happened) {
+		//printf("\n%f,distance: %f\n", hit.distance, distance);
 		float d1 = std::max(0.0f, dotProduct(n, ws));
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
 		L_dir = emit * hitObjInter.m->F(ws, wo, n) * d1 * d2 / (distance * distance) / pdf;
@@ -100,22 +103,14 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 	{
 		Vector3f wi;
 		float pdf = 1;
-		Vector3f value =  hitObjInter.m->Sample_f(wo, wi, n, pdf);
-		
+		Vector3f value = hitObjInter.m->Sample_f(wo, wi, n, pdf);
+
 		//Vector3f wi = hitObjInter.m->sample(wo, n);
 		Ray r(p, wi);
 		Intersection intersect = this->intersect(r);
 		if (intersect.happened && !intersect.obj->hasEmit())
 		{
-			if (intersect.obj->hasEmit())
-			{
-				L_indir = intersect.emit * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
-
-			}
-			else {
-
-			L_indir = castRay(r, 0) * value *  fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
-			}
+			L_indir = castRay(r, 0) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
 		}
 	}
 	return L_dir + L_indir;
