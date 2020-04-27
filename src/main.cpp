@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
 	MateialGlass* glass = new MateialGlass();
 	glass->reflectance = Vector3f(1.0f);
-	glass->ior = 1.3f;
+	glass->ior = 1.5f;
 
 	MeshTriangle floor("./models/cornellbox/floor.obj", white);
 	MeshTriangle shortbox("./models/cornellbox/shortbox.obj", white);
@@ -49,11 +49,11 @@ int main(int argc, char** argv)
 	MeshTriangle glassShortbox("./models/cornellbox/shortbox.obj", glass);
 
 	////测试mirror grass
-	Sphere* sp = new Sphere(Vector3f(300, 100, 300), 100, red);
+	Sphere* sp = new Sphere(Vector3f(400, 100, 200), 100, glass);
 	scene.Add(&floor);
 	//scene.Add(&mirrorTallbox);
-	//scene.Add(sp);
-	//scene.Add(&glassShortbox);
+	scene.Add(sp);
+	scene.Add(&glassShortbox);
 	scene.Add(&left);
 	scene.Add(&right);
 	scene.Add(&light_);
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(8, 4);//设置SPP与线程数
+	r.SetSomeSetting(16, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

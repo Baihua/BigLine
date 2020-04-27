@@ -58,9 +58,10 @@ public:
         
         //return result;
 
-        if (t0 < ray.t_min) t0 = t1;
-        if (t0 < ray.t_min) return result;
+        if (t0 < 0) t0 = t1;
+        if (t0 < 0) return result;
         if (t0 > ray.t_max) return result;
+        
         result.happened=true;
 
         result.coords = Vector3f(ray.origin + ray.direction * t0);

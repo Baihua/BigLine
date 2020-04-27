@@ -44,7 +44,6 @@ void Renderer::Render(const Scene& scene)
 	time_t t = time(0);
 	char tmp[64] = { NULL };
 	strftime(tmp, sizeof(tmp), "outputImages/%Y-%m-%d-%H-%M.ppm", localtime(&t));
-	std::cout << tmp << std::endl;
 	FILE* fp = fopen(tmp, "wb");
 	(void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
 	for (auto i = 0; i < scene.height * scene.width; ++i) {

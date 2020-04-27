@@ -38,12 +38,12 @@ Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f
 	float kr = 1;
 	if (!refract(-wo, N, wi, ior)) {
 		wi = reflect(-wo, N);
-		pdf = 1;
+		pdf = 1; //printf("-ffff\n");
 		return reflectance / fabs(dotProduct(N, wi));
 	}
 	else
 	{
-		this->fresnel(wo, N, ior, kr);
+		this->fresnel(-wo, N, ior, kr);
 		float f = get_random_float();
 		if (f < kr) {
 			//选用反射；
@@ -57,11 +57,10 @@ Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f
 		{	//选用折射
 			pdf = 1 - kr;
 			bool enter = dotProduct(wo, N) > 0;
-			float v = enter ? ior * ior : 1 / (ior * ior);
-			if (enter)
-			{
-				printf("\nadfn\n");
-			}
+			float v = enter ?  1 / (ior * ior): ior * ior ;
+			/*if (!enter) {
+				
+			}*/
 			return v * (1 - kr) * reflectance / fabs(dotProduct(N, wi));
 		}
 

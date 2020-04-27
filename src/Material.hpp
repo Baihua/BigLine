@@ -14,6 +14,7 @@ public:
 	// Compute reflection direction
 	Vector3f reflect(const Vector3f& I, const Vector3f& N) const
 	{
+		
 		return I - 2 * dotProduct(I, N) * N;
 	}
 
@@ -53,11 +54,14 @@ public:
 		Vector3f n = N;
 		if (cosi < 0) { cosi = -cosi; }
 		else { std::swap(etai, etat); n = -N; }
+		
 		float eta = etai / etat;
 		float k = 1 - eta * eta * (1 - cosi * cosi);
-
 		if (k < 0)
+		{
+			R = Vector3f(0);
 			return false;
+		}
 		R = eta * I + (eta * cosi - sqrtf(k)) * n;
 		return true;
 	}
