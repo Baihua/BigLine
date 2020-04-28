@@ -17,8 +17,8 @@ int main(int argc, char** argv)
 
 	// Change the definition here to change resolution
 	//Scene scene(784, 784);
-	//Scene scene(512, 512);
-	Scene scene(256, 256);
+	Scene scene(512, 512);
+	//Scene scene(256, 256);
 
 	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
 	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
@@ -49,11 +49,11 @@ int main(int argc, char** argv)
 	MeshTriangle glassShortbox("./models/cornellbox/shortbox.obj", glass);
 
 	////测试mirror grass
-	Sphere* sp = new Sphere(Vector3f(400, 100, 200), 100, glass);
+	Sphere* sp = new Sphere(Vector3f(150, 100, 200), 100, glass);
 	scene.Add(&floor);
-	//scene.Add(&mirrorTallbox);
+	scene.Add(&tallbox);
 	scene.Add(sp);
-	scene.Add(&glassShortbox);
+	//scene.Add(&glas);
 	scene.Add(&left);
 	scene.Add(&right);
 	scene.Add(&light_);
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(16, 4);//设置SPP与线程数
+	r.SetSomeSetting(64, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 
