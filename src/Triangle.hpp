@@ -54,7 +54,8 @@ public:
 	{
 		e1 = v1 - v0;
 		e2 = v2 - v0;
-		normal = normalize(crossProduct(e1, e2));
+		//normal = normalize(crossProduct(e1, e2));
+		normal = normalize(crossProduct(e2, e1));//换成右手坐标系
 		area = crossProduct(e1, e2).norm() * 0.5f;
 	}
 
@@ -89,6 +90,86 @@ public:
 class MeshTriangle : public Object
 {
 public:
+	MeshTriangle(const std::vector<int>& indices, const std::vector<Vector3f>vt, Material* mt = new Material()) {
+		
+		area = 0;
+		m = mt;
+		
+		Vector3f min_vert = Vector3f{ std::numeric_limits<float>::infinity(),
+									 std::numeric_limits<float>::infinity(),
+									 std::numeric_limits<float>::infinity() };
+		Vector3f max_vert = Vector3f{ -std::numeric_limits<float>::infinity(),
+									 -std::numeric_limits<float>::infinity(),
+									 -std::numeric_limits<float>::infinity() };
+		for (int i = 0; i < indices.size(); i += 3) {
+			std::array<Vector3f, 3> face_vertices;
+
+			for (int j = 0; j < 3; j++) {
+				auto vert = vt[indices[i+j]
+				];
+				face_vertices[j] = vert;
+
+				min_vert = Vector3f(std::min(min_vert.x, vert.x),
+					std::min(min_vert.y, vert.y),
+					std::min(min_vert.z, vert.z));
+				max_vert = Vector3f(std::max(max_vert.x, vert.x),
+					std::max(max_vert.y, vert.y),
+					std::max(max_vert.z, vert.z));
+			}
+
+			triangles.emplace_back(face_vertices[0], face_vertices[1],
+				face_vertices[2], mt);
+		}
+
+		bounding_box = Bounds3(min_vert, max_vert);
+
+		std::vector<Object*> ptrs;
+		for (auto& tri : triangles) {
+			ptrs.push_back(&tri);
+			area += tri.area;
+		}
+		bvh = new BVHAccel(ptrs);
+	}
+	MeshTriangle(const std::vector<int>& indices, const std::vector<float>points, Material* mt = new Material()) {
+
+		area = 0;
+		m = mt;
+
+		Vector3f min_vert = Vector3f{ std::numeric_limits<float>::infinity(),
+									 std::numeric_limits<float>::infinity(),
+									 std::numeric_limits<float>::infinity() };
+		Vector3f max_vert = Vector3f{ -std::numeric_limits<float>::infinity(),
+									 -std::numeric_limits<float>::infinity(),
+									 -std::numeric_limits<float>::infinity() };
+		for (int i = 0; i < indices.size(); i += 3) {
+			std::array<Vector3f, 3> face_vertices;
+
+			for (int j = 0; j < 3; j++) {
+				auto vert = Vector3f(points[3*indices[i + j]], points[3 * indices[i + j]+1], points[3 * indices[i + j]+2]);
+				face_vertices[j] = vert;
+
+				min_vert = Vector3f(std::min(min_vert.x, vert.x),
+					std::min(min_vert.y, vert.y),
+					std::min(min_vert.z, vert.z));
+				max_vert = Vector3f(std::max(max_vert.x, vert.x),
+					std::max(max_vert.y, vert.y),
+					std::max(max_vert.z, vert.z));
+			}
+
+			triangles.emplace_back(face_vertices[0], face_vertices[1],
+				face_vertices[2], mt);
+		}
+
+		bounding_box = Bounds3(min_vert, max_vert);
+
+		std::vector<Object*> ptrs;
+		for (auto& tri : triangles) {
+			ptrs.push_back(&tri);
+			area += tri.area;
+		}
+		bvh = new BVHAccel(ptrs);
+	}
+
 	MeshTriangle(const std::string& filename, Material* mt = new Material())
 	{
 		objl::Loader loader;
@@ -205,7 +286,14 @@ public:
 	bool hasEmit() {
 		return m->hasEmission();
 	}
-
+	void SetMaterial(Material* m)
+	{
+		this->m = m;
+		for (auto &t : triangles)
+		{
+			t.m = m;
+		}
+	}
 	Bounds3 bounding_box;
 	std::unique_ptr<Vector3f[]> vertices;
 	uint32_t numTriangles;

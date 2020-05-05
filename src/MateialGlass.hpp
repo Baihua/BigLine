@@ -17,6 +17,7 @@ public:
 	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) {
 		return Vector3f(0);
 	}
+	virtual inline bool hasPerfectSpecula() { return true; }
 
 	Vector3f reflectance;
 };

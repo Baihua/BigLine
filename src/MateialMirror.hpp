@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "Material.hpp"
@@ -14,6 +15,7 @@ public:
 	virtual inline Vector3f eval(const Vector3f& wi, const Vector3f& wo, const Vector3f& N);
 	virtual inline Vector3f Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f& N, float& pdf);
 	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) { return Vector3f(0); }
+	virtual inline bool hasPerfectSpecula() { return true; }
 	Vector3f reflectance;
 };
 

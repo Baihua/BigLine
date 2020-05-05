@@ -17,7 +17,7 @@ const float EPSILON = 0.01;
 // framebuffer is saved to a file.
 void Renderer::Render(const Scene& scene)
 {
-	
+
 	pScene = &scene;
 	framebuffer.resize(scene.width * scene.height);
 	finishedRowNum = 0;
@@ -37,7 +37,7 @@ void Renderer::Render(const Scene& scene)
 		threads.push_back(t);
 	}
 	for (std::shared_ptr<std::thread> t : threads) {
-	 	t->join();
+		t->join();
 	}
 
 	UpdateProgress(1.f);
@@ -59,17 +59,19 @@ void Renderer::TheadRender(int beginRow, int endRow) {
 
 	float scale = tan(deg2rad(pScene->fov * 0.5));
 	float imageAspectRatio = pScene->width / (float)pScene->height;
-	Vector3f eye_pos(278, 273, -800);
+	Vector3f eye_pos =  pScene->eyePos;// (278, 273, -800);
 	int m = beginRow * pScene->width;
 	for (uint32_t j = beginRow; j < endRow; ++j) {
 		for (uint32_t i = 0; i < pScene->width; ++i) {
 			// generate primary ray direction
-			float x = (2 * (i + 0.5) / (float)pScene->width - 1) *
-				imageAspectRatio * scale;
-			float y = (1 - 2 * (j + 0.5) / (float)pScene->height) * scale;
 
-			Vector3f dir = normalize(Vector3f(-x, y, 1));
 			for (int k = 0; k < SPP; k++) {
+
+				float x = (2 * (i + get_random_float()) / (float)pScene->width - 1) *
+					imageAspectRatio * scale;
+				float y = (1 - 2 * (j + get_random_float()) / (float)pScene->height) * scale;
+				Vector3f dir = normalize(Vector3f(-x, y, -1));
+
 				framebuffer[m] += pScene->castRay(Ray(eye_pos, dir), 0) / SPP;
 			}
 			m++;

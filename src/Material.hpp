@@ -168,7 +168,6 @@ public:
 	inline Vector3f getColorAt(double u, double v);
 	inline Vector3f getEmission();
 	inline bool hasEmission();
-
 	// sample a ray by Material properties
 	virtual inline Vector3f sample(const Vector3f& wi, const Vector3f& N);
 	// given a ray, calculate the PdF of this ray
@@ -177,6 +176,7 @@ public:
 	virtual inline Vector3f eval(const Vector3f& wi, const Vector3f& wo, const Vector3f& N);
 	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N);
 	virtual inline Vector3f Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f& N, float& pdf);
+	virtual inline bool hasPerfectSpecula() { return false; }
 	
 	float Roughness = 0.3f;
 };

@@ -104,6 +104,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>./$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,6 +157,7 @@
     <ClInclude Include="src\Ray.hpp" />
     <ClInclude Include="src\Renderer.hpp" />
     <ClInclude Include="src\Scene.hpp" />
+    <ClInclude Include="src\SceneDataLoad.hpp" />
     <ClInclude Include="src\Sphere.hpp" />
     <ClInclude Include="src\Triangle.hpp" />
     <ClInclude Include="src\Vector.hpp" />

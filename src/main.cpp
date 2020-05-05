@@ -7,6 +7,8 @@
 #include <chrono>
 #include "MateialMirror.hpp"
 #include "MateialGlass.hpp"
+#include "SceneDataLoad.hpp"
+
 // In the main function of the program, we create the scene (create objects and
 // lights) as well as set the options for the render (image width and height,
 // maximum recursion depth, field-of-view, etc.). We then call the render
@@ -19,6 +21,8 @@ int main(int argc, char** argv)
 	//Scene scene(784, 784);
 	Scene scene(512, 512);
 	//Scene scene(256, 256);
+	SceneDataLoad sl;
+	sl.Load("./scene/cornell-box.txt");
 
 	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
 	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
@@ -32,31 +36,33 @@ int main(int argc, char** argv)
 	mirror->reflectance = Vector3f(1.0f);
 
 	MateialGlass* glass = new MateialGlass();
-	glass->reflectance = Vector3f(1.0f);
+	glass->reflectance = Vector3f(0.9f);
 	glass->ior = 1.5f;
 
-	MeshTriangle floor("./models/cornellbox/floor.obj", white);
-	MeshTriangle shortbox("./models/cornellbox/shortbox.obj", white);
-	MeshTriangle tallbox("./models/cornellbox/tallbox.obj", white);
-	MeshTriangle left("./models/cornellbox/left.obj", red);
-	MeshTriangle right("./models/cornellbox/right.obj", green);
-	MeshTriangle light_("./models/cornellbox/light.obj", light);
+	//std::vector<int> ind{ 0, 1, 2, 0, 2, 3 }; std::vector<Vector3f> v{ Vector3f(0.0, 0.0, 559.2),Vector3f(0.0, 0.0, 0.0), Vector3f(0.0, 548.8, 0.0), Vector3f(0.0, 548.8, 559.2) };
+	//MeshTriangle floor("./models/cornellbox/floor.obj", white);
+	//MeshTriangle shortbox("./models/cornellbox/shortbox.obj", white);
+	//MeshTriangle tallbox("./models/cornellbox/tallbox.obj", white);
+	//MeshTriangle left("./models/cornellbox/left.obj", red);
+	////MeshTriangle right("./models/cornellbox/right.obj", green);
+	//MeshTriangle right(ind, v, green);
+	//MeshTriangle light_("./models/cornellbox/light.obj", light);
 
 
-	MeshTriangle mirrorTallbox("./models/cornellbox/tallbox.obj", mirror);
-	MeshTriangle mirrorShortbox("./models/cornellbox/shortbox.obj", mirror);
+	//MeshTriangle mirrorTallbox("./models/cornellbox/tallbox.obj", mirror);
+	//MeshTriangle mirrorShortbox("./models/cornellbox/shortbox.obj", mirror);
 
-	MeshTriangle glassShortbox("./models/cornellbox/shortbox.obj", glass);
+	//MeshTriangle glassShortbox("./models/cornellbox/shortbox.obj", glass);
 
 	////测试mirror grass
-	Sphere* sp = new Sphere(Vector3f(150, 100, 200), 100, glass);
-	scene.Add(&floor);
-	scene.Add(&tallbox);
-	scene.Add(sp);
-	//scene.Add(&glas);
-	scene.Add(&left);
-	scene.Add(&right);
-	scene.Add(&light_);
+	//Sphere* sp = new Sphere(Vector3f(150, 100, 200), 100, glass);
+	//scene.Add(&floor);
+	//scene.Add(&tallbox);
+	//scene.Add(sp);
+	////scene.Add(&glas);
+	//scene.Add(&left);
+	//scene.Add(&right);
+	//scene.Add(&light_);
 
 
 	 ////任务1测试场景
@@ -66,37 +72,54 @@ int main(int argc, char** argv)
 	 //scene.Add(&left);
 	 //scene.Add(&right);
 	 //scene.Add(&light_);
-	
+	MeshTriangle* floor = sl.meshes["Floor"];
+	floor->SetMaterial(white);
+	MeshTriangle* ceiling = sl.meshes["Ceiling"];
+	ceiling->SetMaterial(white);
+	MeshTriangle* backwall = sl.meshes["BackWall"];
+	backwall->SetMaterial(white);
+	MeshTriangle* leftWall = sl.meshes["LeftWall"];
+	leftWall->SetMaterial(red);
+	MeshTriangle* rightWall = sl.meshes["RightWall"];
+	rightWall->SetMaterial(green);
+	MeshTriangle* light_ = sl.meshes["Light"];
+	light_->SetMaterial(light);
+	scene.eyePos = Vector3f(0,0,6.8);
+	scene.Add(floor);
+	scene.Add(backwall);
+	scene.Add(leftWall);
+	scene.Add(rightWall);
+	scene.Add(ceiling);
+	scene.Add(light_);
+	//测试mirror
+   //scene.Add(&floor);
+   //scene.Add(&mirrorTallbox);
+   //scene.Add(&mirrorShortbox);
+   //scene.Add(&left);
+   //scene.Add(&right);
+   //scene.Add(&light_);
 
-	/* //测试mirror
+
+   /* //测试microfacet 场景
+	Material* metal = new Material(MICROFACET, Vector3f(0.0f));
+	metal->ior = 20;
+	metal->Roughness = 0.8;
+	Sphere *sp = new Sphere(Vector3f(100, 100, 300), 100, metal);
+	Sphere* sp2 = new Sphere(Vector3f(400, 100, 300), 100, white);
 	scene.Add(&floor);
-	scene.Add(&mirrorTallbox);
-	scene.Add(&mirrorShortbox);
 	scene.Add(&left);
 	scene.Add(&right);
+	scene.Add(sp);
+	scene.Add(sp2);
 	scene.Add(&light_);
-	*/
-
-	/* //测试microfacet 场景
-	 Material* metal = new Material(MICROFACET, Vector3f(0.0f));
-	 metal->ior = 20;
-	 metal->Roughness = 0.8;
-	 Sphere *sp = new Sphere(Vector3f(100, 100, 300), 100, metal);
-	 Sphere* sp2 = new Sphere(Vector3f(400, 100, 300), 100, white);
-	 scene.Add(&floor);
-	 scene.Add(&left);
-	 scene.Add(&right);
-	 scene.Add(sp);
-	 scene.Add(sp2);
-	 scene.Add(&light_);
-   */
+  */
 
 	scene.buildBVH();
 
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(64, 4);//设置SPP与线程数
+	r.SetSomeSetting(1, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

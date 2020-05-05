@@ -1,0 +1,6 @@
+Floor	indices: 0 1 2 0 2 3 point: -1 1.74846e-007 -1 -1 1.74846e-007 1 1 -1.74846e-007 1 1 -1.74846e-007 -1 
+Ceiling	indices: 0 1 2 0 2 3 point: 1 2 1 -1 2 1 -1 2 -1 1 2 -1 
+BackWall indices: 0 1 2 0 2 3 point: -1 0 -1 -1 2 -1 1 2 -1 1 0 -1
+RightWall indices: 0 1 2 0 2 3 point: 1 0 -1 1 2 -1 1 2 1 1 0 1 
+LeftWall indices: 0 1 2 0 2 3 point:  -1 0 1 -1 2 1 -1 2 -1 -1 0 -1
+Light indices: 0 2 1 0 3 2 point: -0.24 1.98 -0.22 0.23 1.98 -0.22 0.23 1.98 0.16 -0.24 1.98 0.16
