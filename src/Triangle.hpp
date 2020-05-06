@@ -85,6 +85,10 @@ public:
 	bool hasEmit() {
 		return m->hasEmission();
 	}
+	virtual void SetMaterial(Material* mat) {
+		m = mat;
+	}
+
 };
 
 class MeshTriangle : public Object
@@ -286,7 +290,8 @@ public:
 	bool hasEmit() {
 		return m->hasEmission();
 	}
-	void SetMaterial(Material* m)
+	
+	virtual void SetMaterial(Material* m)
 	{
 		this->m = m;
 		for (auto &t : triangles)

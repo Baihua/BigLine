@@ -5,12 +5,15 @@
 #include <fstream>
 #include <sstream>
 #include "Triangle.hpp"
+
+#include "Sphere.hpp"
+
 class SceneDataLoad {
 public:
 	SceneDataLoad() {}
 	void Load(const char* file);
 
-	std::map<std::string, MeshTriangle*> meshes;
+	std::map<std::string, Object*> objects;
 };
 
 void SceneDataLoad::Load(const char* file) {
@@ -26,32 +29,55 @@ void SceneDataLoad::Load(const char* file) {
 		std::vector<int> indices;
 		std::vector<float> point;
 		bool nextIsIndex = false;
-		std::string name;
-		ss >> name;
-		while (ss >> t)
-		{
-			if (t == "indices:")
+		std::string type;
+		ss >> type;
+		if (type == "mesh") {
+			std::string name;
+			ss >> name;
+			while (ss >> t)
 			{
-				nextIsIndex = true;
-				continue;
-			}else if(t=="point:")
-			{
-				nextIsIndex = false;
-				continue;
+				if (t == "indices:")
+				{
+					nextIsIndex = true;
+					continue;
+				}
+				else if (t == "point:")
+				{
+					nextIsIndex = false;
+					continue;
+				}
+				if (nextIsIndex)
+				{
+					int d = std::stoi(t);
+					indices.push_back(d);
+				}
+				else {
+					float f = std::stof(t);
+					point.push_back(f);
+				}
 			}
-			if (nextIsIndex)
-			{
-				int d = std::stoi(t);
-				indices.push_back(d);
-			}
-			else {
-				float f = std::stof(t);
-				point.push_back(f);
-			}
-			std::cout << t << std::endl;
+			MeshTriangle* m = new MeshTriangle(indices, point);
+			objects[name] = m;
 		}
-		MeshTriangle* m = new MeshTriangle(indices, point);
-		meshes[name] = m;
+		else if (type == "sphere") {
+			std::string name;
+			float r; Vector3f pos;
+			ss >> name;
+			while (ss >> t)
+			{
+				if (t == "radius:")
+				{
+					ss >> r;
+				}
+				else if (t == "point:")
+				{
+					ss >> pos.x >> pos.y >> pos.z;
+				}
+			}
+			Sphere* sp = new Sphere(pos, r);
+			objects[name] = sp;
+		}
+
 	}
 
 }

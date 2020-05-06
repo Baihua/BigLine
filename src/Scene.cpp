@@ -58,16 +58,21 @@ bool Scene::trace(
 }
 
 // Implementation of Path Tracing
-Vector3f Scene::castRay(const Ray& ray, int depth) const
+Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular ) const
 {
 
 	// TO DO Implement Path Tracing Algorithm here
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
 		return Vector3f();
-	
+	//if (isPerfectSpecular)
+	//	printf("\ndadfasdf\n");
 	if (hitObjInter.obj->hasEmit())
+	{
+		if (isPerfectSpecular)
+			printf("\n~~~~\n");
 		return hitObjInter.m->getEmission();
+	}
 	Vector3f wo = -ray.direction;
 	Vector3f p = hitObjInter.coords;
 	Vector3f n = hitObjInter.normal;
@@ -110,7 +115,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 			{
 				if (!intersect.obj->hasEmit() || hitObjInter.m->hasPerfectSpecula()) {
 				
-					L_indir = castRay(r, 0) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
+					L_indir = castRay(r, 0, hitObjInter.m->hasPerfectSpecula()) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
 				}
 			}
 		}

@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	//Scene scene(256, 256);
 	SceneDataLoad sl;
 	//sl.Load("./scene/cornell-box.txt");
-	sl.Load("./scene/cornell.txt");
+	sl.Load("./scene/mis.txt");
 
 	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
 	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
@@ -34,12 +34,27 @@ int main(int argc, char** argv)
 	Material* light = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
 	light->Kd = Vector3f(0.65f);
 	MateialMirror* mirror = new MateialMirror();
-	mirror->reflectance = Vector3f(1.0f);
+	mirror->reflectance = Vector3f(0.9f);
 
 	MateialGlass* glass = new MateialGlass();
 	glass->reflectance = Vector3f(0.9f);
 	glass->ior = 1.5f;
 
+	sl.objects["floor"]->SetMaterial(mirror);
+	sl.objects["back"]->SetMaterial(mirror);
+	
+	//sl.objects["p1"]->SetMaterial(mirror);
+	//sl.objects["p2"]->SetMaterial(mirror);
+	//sl.objects["p3"]->SetMaterial(mirror);
+	//sl.objects["p4"]->SetMaterial(mirror);
+
+	sl.objects["small"]->SetMaterial(light);
+	sl.objects["middle"]->SetMaterial(light);
+	sl.objects["big"]->SetMaterial(light);
+
+	for (auto item : sl.objects) {
+		scene.Add(item.second);
+	}
 	//std::vector<int> ind{ 0, 1, 2, 0, 2, 3 }; std::vector<Vector3f> v{ Vector3f(0.0, 0.0, 559.2),Vector3f(0.0, 0.0, 0.0), Vector3f(0.0, 548.8, 0.0), Vector3f(0.0, 548.8, 559.2) };
 	//MeshTriangle floor("./models/cornellbox/floor.obj", white);
 	//MeshTriangle shortbox("./models/cornellbox/shortbox.obj", white);
@@ -73,33 +88,33 @@ int main(int argc, char** argv)
 	 //scene.Add(&left);
 	 //scene.Add(&right);
 	 //scene.Add(&light_);
-	MeshTriangle* floor = sl.meshes["floor"];
-	floor->SetMaterial(white);
-	MeshTriangle* ceiling = sl.meshes["ceiling"];
-	ceiling->SetMaterial(white);
-	MeshTriangle* backwall = sl.meshes["back"];
-	backwall->SetMaterial(white);
-	MeshTriangle* leftWall = sl.meshes["left"];
-	leftWall->SetMaterial(red);
-	MeshTriangle* rightWall = sl.meshes["right"];
-	rightWall->SetMaterial(green);
-	MeshTriangle* light_ = sl.meshes["light"];
-	light_->SetMaterial(light);
+	//MeshTriangle* floor = sl.meshes["floor"];
+	//floor->SetMaterial(white);
+	//MeshTriangle* ceiling = sl.meshes["ceiling"];
+	//ceiling->SetMaterial(white);
+	//MeshTriangle* backwall = sl.meshes["back"];
+	//backwall->SetMaterial(white);
+	//MeshTriangle* leftWall = sl.meshes["left"];
+	//leftWall->SetMaterial(red);
+	//MeshTriangle* rightWall = sl.meshes["right"];
+	//rightWall->SetMaterial(green);
+	//MeshTriangle* light_ = sl.meshes["light"];
+	//light_->SetMaterial(light);
 
-	MeshTriangle* tallBox = sl.meshes["tallBox"];
-	tallBox->SetMaterial(white);
-	MeshTriangle* shortBox = sl.meshes["shortBox"];
-	shortBox->SetMaterial(white);
+	//MeshTriangle* tallBox = sl.meshes["tallBox"];
+	//tallBox->SetMaterial(white);
+	//MeshTriangle* shortBox = sl.meshes["shortBox"];
+	//shortBox->SetMaterial(white);
 
-	scene.eyePos = Vector3f(0,0,-24);
-	scene.Add(floor);
-	scene.Add(backwall);
-	scene.Add(leftWall);
-	scene.Add(rightWall);
-	scene.Add(ceiling);
-	scene.Add(light_);
-	scene.Add(tallBox);
-	scene.Add(shortBox);
+	scene.eyePos = Vector3f(0,4,-24);
+	//scene.Add(floor);
+	//scene.Add(backwall);
+	//scene.Add(leftWall);
+	//scene.Add(rightWall);
+	//scene.Add(ceiling);
+	//scene.Add(light_);
+	//scene.Add(tallBox);
+	//scene.Add(shortBox);
 	//≤‚ ‘mirror
    //scene.Add(&floor);
    //scene.Add(&mirrorTallbox);

@@ -98,6 +98,9 @@ public:
     bool hasEmit(){
         return m->hasEmission();
     }
+    virtual void SetMaterial(Material* mat) {
+        m = mat;
+    }
 };
 
 

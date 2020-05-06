@@ -33,21 +33,25 @@ public class GetMeshData : MonoBehaviour {
 		string info = "";
 		MeshFilter[] mfs = GetComponentsInChildren<MeshFilter> ();
 		foreach (MeshFilter f in mfs) {
-			//			;
-			Debug.Log (f.sharedMesh.name);
-
-			Debug.Log (f.GetType ());
-			Debug.Log (f.name);
-			info += f.name + " indices:";
-			foreach (int i in f.sharedMesh.triangles) {
-				info += " " + i.ToString ();
+			//
+			string line = "";
+			if (f.tag == "mesh") {
+				line += "mesh ";
+				line += f.name + " indices:";
+				foreach (int i in f.sharedMesh.triangles) {
+					line += " " + i.ToString ();
+				}
+				line += " point:";
+				for (var i = 0; i < f.sharedMesh.vertices.Length; i++) {
+					Vector3 p = transform.TransformPoint (f.transform.TransformPoint (f.sharedMesh.vertices[i]));
+					line += " " + p.x + " " + p.y + " " + p.z;
+				}
+			} else if (f.tag == "sphere") {
+				line += "sphere ";
+				line += f.name + " radius: " + f.transform.localScale.x;
+				line += " point: "+f.transform.position.x+" "+ f.transform.position.y+" "+f.transform.position.z;
 			}
-			info += " point:";
-			for (var i = 0; i < f.sharedMesh.vertices.Length; i++) {
-				Vector3 p = transform.TransformPoint (f.transform.TransformPoint (f.sharedMesh.vertices[i]));
-				info += " " + p.x + " " + p.y + " " + p.z;
-			}
-			info += "\n";
+			info += line+"\n";
 		}
 		Debug.Log (info);
 
