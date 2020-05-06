@@ -106,14 +106,8 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f: p - n * 0.001f;
 			Ray r(o, wi);
 			Intersection intersect = this->intersect(r);
-			if (intersect.happened /*&& !intersect.obj->hasEmit()*/)
+			if (intersect.happened)
 			{
-				//L_indir = castRay(r, 0) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
-
-				//if (hitObjInter.m->hasPerfectSpecula())
-				//{
-				////	L_indir = intersect.m->getEmission() * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
-				//}
 				if (!intersect.obj->hasEmit() || hitObjInter.m->hasPerfectSpecula()) {
 				
 					L_indir = castRay(r, 0) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;

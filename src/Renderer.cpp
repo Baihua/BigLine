@@ -70,7 +70,7 @@ void Renderer::TheadRender(int beginRow, int endRow) {
 				float x = (2 * (i + get_random_float()) / (float)pScene->width - 1) *
 					imageAspectRatio * scale;
 				float y = (1 - 2 * (j + get_random_float()) / (float)pScene->height) * scale;
-				Vector3f dir = normalize(Vector3f(-x, y, -1));
+				Vector3f dir = normalize(Vector3f(x, y, 1));
 
 				framebuffer[m] += pScene->castRay(Ray(eye_pos, dir), 0) / SPP;
 			}

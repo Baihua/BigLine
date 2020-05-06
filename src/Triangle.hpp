@@ -54,8 +54,8 @@ public:
 	{
 		e1 = v1 - v0;
 		e2 = v2 - v0;
-		//normal = normalize(crossProduct(e1, e2));
-		normal = normalize(crossProduct(e2, e1));//换成右手坐标系
+		normal = normalize(crossProduct(e1, e2));
+		//normal = normalize(crossProduct(e2, e1));//换成右手坐标系
 		area = crossProduct(e1, e2).norm() * 0.5f;
 	}
 

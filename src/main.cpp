@@ -22,7 +22,8 @@ int main(int argc, char** argv)
 	Scene scene(512, 512);
 	//Scene scene(256, 256);
 	SceneDataLoad sl;
-	sl.Load("./scene/cornell-box.txt");
+	//sl.Load("./scene/cornell-box.txt");
+	sl.Load("./scene/cornell.txt");
 
 	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
 	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
@@ -72,25 +73,33 @@ int main(int argc, char** argv)
 	 //scene.Add(&left);
 	 //scene.Add(&right);
 	 //scene.Add(&light_);
-	MeshTriangle* floor = sl.meshes["Floor"];
+	MeshTriangle* floor = sl.meshes["floor"];
 	floor->SetMaterial(white);
-	MeshTriangle* ceiling = sl.meshes["Ceiling"];
+	MeshTriangle* ceiling = sl.meshes["ceiling"];
 	ceiling->SetMaterial(white);
-	MeshTriangle* backwall = sl.meshes["BackWall"];
+	MeshTriangle* backwall = sl.meshes["back"];
 	backwall->SetMaterial(white);
-	MeshTriangle* leftWall = sl.meshes["LeftWall"];
+	MeshTriangle* leftWall = sl.meshes["left"];
 	leftWall->SetMaterial(red);
-	MeshTriangle* rightWall = sl.meshes["RightWall"];
+	MeshTriangle* rightWall = sl.meshes["right"];
 	rightWall->SetMaterial(green);
-	MeshTriangle* light_ = sl.meshes["Light"];
+	MeshTriangle* light_ = sl.meshes["light"];
 	light_->SetMaterial(light);
-	scene.eyePos = Vector3f(0,0,6.8);
+
+	MeshTriangle* tallBox = sl.meshes["tallBox"];
+	tallBox->SetMaterial(white);
+	MeshTriangle* shortBox = sl.meshes["shortBox"];
+	shortBox->SetMaterial(white);
+
+	scene.eyePos = Vector3f(0,0,-24);
 	scene.Add(floor);
 	scene.Add(backwall);
 	scene.Add(leftWall);
 	scene.Add(rightWall);
 	scene.Add(ceiling);
 	scene.Add(light_);
+	scene.Add(tallBox);
+	scene.Add(shortBox);
 	//测试mirror
    //scene.Add(&floor);
    //scene.Add(&mirrorTallbox);
@@ -119,7 +128,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(1, 4);//设置SPP与线程数
+	r.SetSomeSetting(16, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 
