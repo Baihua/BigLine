@@ -58,19 +58,16 @@ bool Scene::trace(
 }
 
 // Implementation of Path Tracing
-Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular ) const
+Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 {
 
 	// TO DO Implement Path Tracing Algorithm here
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
 		return Vector3f();
-	//if (isPerfectSpecular)
-	//	printf("\ndadfasdf\n");
-	if (hitObjInter.obj->hasEmit())
+
+	if (hitObjInter.obj->hasEmit()&&(depth == 0|| isPerfectSpecular))
 	{
-		if (isPerfectSpecular)
-			printf("\n~~~~\n");
 		return hitObjInter.m->getEmission();
 	}
 	Vector3f wo = -ray.direction;
@@ -87,17 +84,15 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular ) cons
 
 	float distance = (p - x).norm();
 	Vector3f L_dir;
-	{
-		Vector3f o = p + n* 0.001;
-		Ray hitTest(p, ws);
-		Intersection hit = intersect(hitTest);
-		if (!hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
-			//printf("\n%f,distance: %f\n", hit.distance, distance);
-			float d1 = std::max(0.0f, dotProduct(n, ws));
-			float d2 = std::max(0.0f, dotProduct(nn, -ws));
-			L_dir = emit * hitObjInter.m->F(ws, wo, n) * d1 * d2 / (distance * distance) / pdf;
-		}
+	Vector3f o = p + n * 0.001;
+	Ray hitTest(p, ws);
+	Intersection hit = intersect(hitTest);
+	if (!hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
+		float d1 = std::max(0.0f, dotProduct(n, ws));
+		float d2 = std::max(0.0f, dotProduct(nn, -ws));
+		L_dir = emit * hitObjInter.m->F(ws, wo, n) * d1 * d2 / (distance * distance) / pdf;
 	}
+
 
 	Vector3f L_indir;
 
@@ -108,14 +103,14 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular ) cons
 		Vector3f value = hitObjInter.m->Sample_f(wo, wi, n, pdf);
 		if (!value.isAllZero())
 		{
-			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f: p - n * 0.001f;
+			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
 			Ray r(o, wi);
 			Intersection intersect = this->intersect(r);
 			if (intersect.happened)
 			{
 				if (!intersect.obj->hasEmit() || hitObjInter.m->hasPerfectSpecula()) {
-				
-					L_indir = castRay(r, 0, hitObjInter.m->hasPerfectSpecula()) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
+
+					L_indir = castRay(r, depth + 1, hitObjInter.m->hasPerfectSpecula()) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
 				}
 			}
 		}

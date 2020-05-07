@@ -1,0 +1,4 @@
+mesh floor indices: 0 1 2 1 0 3 point: -13.10294 -3.999999 -7.640001 11.00294 -4.000001 12.36 11.00294 -3.999999 -7.640001 -13.10294 -4.000001 12.36
+sphere middle radius: 0.5 point: -0.33 -3.5 4.98
+sphere mr radius: 2 point: -3.55 -2.05 9.11
+sphere df radius: 2 point: 0.44 -2 9.11
