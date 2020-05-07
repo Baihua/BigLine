@@ -61,12 +61,14 @@ bool Scene::trace(
 Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 {
 
+	float weightLightSimple = 0, weightBxdfSimple = 0;
+	float lightPdf = 0;
 	// TO DO Implement Path Tracing Algorithm here
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
 		return Vector3f();
 
-	if (hitObjInter.obj->hasEmit()&&(depth == 0|| isPerfectSpecular))
+	if (hitObjInter.obj->hasEmit() && (depth == 0 || isPerfectSpecular))
 	{
 		return hitObjInter.m->getEmission();
 	}
@@ -74,9 +76,8 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f p = hitObjInter.coords;
 	Vector3f n = hitObjInter.normal;
 
-	float pdf = 1;
 	Intersection lightInter;
-	this->sampleLight(lightInter, pdf);
+	this->sampleLight(lightInter, lightPdf);
 	Vector3f x = lightInter.coords;
 	Vector3f ws = normalize(x - p);
 	Vector3f emit = lightInter.emit;
@@ -90,19 +91,22 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	if (!hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
 		float d1 = std::max(0.0f, dotProduct(n, ws));
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
-		L_dir = emit * hitObjInter.m->F(ws, wo, n) * d1 * d2 / (distance * distance) / pdf;
+		L_dir = emit * hitObjInter.m->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
 	}
 
 
 	Vector3f L_indir;
-
+	float bxdfPdf = 0;
+	bool rrTest = false;
 	if (get_random_float() < RussianRoulette)//test rrp
 	{
+
 		Vector3f wi;
 		float pdf = 1;
 		Vector3f value = hitObjInter.m->Sample_f(wo, wi, n, pdf);
 		if (!value.isAllZero())
 		{
+			rrTest = true;
 			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
 			Ray r(o, wi);
 			Intersection intersect = this->intersect(r);
@@ -115,7 +119,14 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			}
 		}
 	}
-	return L_dir + L_indir;
+	if (hitObjInter.m->hasPerfectSpecula() || !rrTest) { weightLightSimple = 1, weightBxdfSimple = 1; }
+	else
+	{
+		weightLightSimple = PowerHeuistic(1, lightPdf, 1, bxdfPdf);//BalanceHeuristic(1, lightPdf, 1, bxdfPdf);
+		weightBxdfSimple = 1 - weightLightSimple;
+		//weightLightSimple = 1, weightBxdfSimple = 1;
+	}
+	return L_dir * weightLightSimple + L_indir * weightBxdfSimple;
 }
 
 //Vector3f Scene::shade(Vector3f pos, Vector3f wo) {

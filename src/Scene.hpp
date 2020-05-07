@@ -110,5 +110,13 @@ public:
         // kt = 1 - kr;
     }
 
-    
+    float BalanceHeuristic(int nf, float fPdf, int ng, float gPdf) const{
+        return (nf * fPdf) / (nf * fPdf + ng * gPdf);
+    }
+
+    float PowerHeuistic(int nf, float fPdf, int ng, float gPdf) const
+    {
+        float f = nf * fPdf, g = ng * gPdf;
+        return (f * f) / (f * f + g * g);
+    }
 };
