@@ -23,8 +23,10 @@ int main(int argc, char** argv)
 	//Scene scene(256, 256);
 	SceneDataLoad sl;
 	//sl.Load("./scene/cornell-box.txt");
-	sl.Load("./scene/mis2.txt");
-
+	sl.Load("./scene/mis.xml");
+	Material* metal = new Material(MICROFACET, Vector3f(0.0f));
+	metal->ior = 20;
+	metal->Roughness = 0.3;
 	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
 	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
 	Material* green = new Material(DIFFUSE, Vector3f(0.0f));
@@ -41,18 +43,20 @@ int main(int argc, char** argv)
 	glass->ior = 1.5f;
 
 	sl.objects["floor"]->SetMaterial(white);
-	/*sl.objects["back"]->SetMaterial(white);
+	sl.objects["back"]->SetMaterial(white);
 	
-	sl.objects["p1"]->SetMaterial(white);
+	sl.objects["p1"]->SetMaterial(metal);
 	sl.objects["p2"]->SetMaterial(white);
 	sl.objects["p3"]->SetMaterial(white);
 	sl.objects["p4"]->SetMaterial(white);
 
-	sl.objects["small"]->SetMaterial(light)*/;
+	sl.objects["small"]->SetMaterial(light);
 	sl.objects["middle"]->SetMaterial(light);
-	sl.objects["mr"]->SetMaterial(mirror);
-	sl.objects["df"]->SetMaterial(green);
-	//sl.objects["big"]->SetMaterial(light);
+	sl.objects["big"]->SetMaterial(light);
+
+
+	//sl.objects["mr"]->SetMaterial(mirror);
+	//sl.objects["df"]->SetMaterial(green);
 
 	for (auto item : sl.objects) {
 		scene.Add(item.second);
@@ -108,7 +112,8 @@ int main(int argc, char** argv)
 	//MeshTriangle* shortBox = sl.meshes["shortBox"];
 	//shortBox->SetMaterial(white);
 
-	scene.eyePos = Vector3f(0,-1.1,-7.17);
+	scene.eyePos = sl.eyePos;
+	scene.fov = sl.fov;
 	//scene.Add(floor);
 	//scene.Add(backwall);
 	//scene.Add(leftWall);
@@ -145,7 +150,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(64, 4);//设置SPP与线程数
+	r.SetSomeSetting(16, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

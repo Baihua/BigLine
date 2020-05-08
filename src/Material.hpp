@@ -6,11 +6,12 @@
 #define RAYTRACING_MATERIAL_H
 
 #include "Vector.hpp"
-
+#include "Bxdf.hpp"
 enum MaterialType { DIFFUSE, MICROFACET };
 
 class Material {
 public:
+	BxDF* bxdf = NULL;
 	// Compute reflection direction
 	Vector3f reflect(const Vector3f& I, const Vector3f& N) const
 	{

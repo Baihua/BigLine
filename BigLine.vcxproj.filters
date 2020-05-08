@@ -60,6 +60,12 @@
     <ClInclude Include="src\SceneDataLoad.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\DiffuseBxdf.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bxdf.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BVH.cpp">

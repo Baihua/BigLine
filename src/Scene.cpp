@@ -4,6 +4,7 @@
 
 #include "Scene.hpp"
 #include <thread>
+#include "Bxdf.hpp"
 
 void Scene::buildBVH() {
 	printf(" - Generating BVH...\n\n");
@@ -63,12 +64,14 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 
 	float weightLightSimple = 0, weightBxdfSimple = 0;
 	float lightPdf = 0;
-	// TO DO Implement Path Tracing Algorithm here
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
 		return Vector3f();
+	
+	BxDF* bxdf = hitObjInter.m->bxdf;
+	if (bxdf == NULL) return Vector3f();
 
-	if (hitObjInter.obj->hasEmit() && (depth == 0 || isPerfectSpecular))
+	if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
 	{
 		return hitObjInter.m->getEmission();
 	}
@@ -91,7 +94,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	if (!hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
 		float d1 = std::max(0.0f, dotProduct(n, ws));
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
-		L_dir = emit * hitObjInter.m->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
+		L_dir = emit * bxdf->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
 	}
 
 
@@ -102,8 +105,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	{
 
 		Vector3f wi;
-		float pdf = 1;
-		Vector3f value = hitObjInter.m->Sample_f(wo, wi, n, pdf);
+		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
 		if (!value.isAllZero())
 		{
 			rrTest = true;
@@ -114,7 +116,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			{
 				if (!intersect.obj->hasEmit() || hitObjInter.m->hasPerfectSpecula()) {
 
-					L_indir = castRay(r, depth + 1, hitObjInter.m->hasPerfectSpecula()) * value * fabs(dotProduct(wi, n)) / pdf / RussianRoulette;
+					L_indir = castRay(r, depth + 1, hitObjInter.m->hasPerfectSpecula()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
 				}
 			}
 		}
