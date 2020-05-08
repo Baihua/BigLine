@@ -4,9 +4,10 @@
 #include "Bxdf.hpp"
 #include "global.hpp"
 class DiffuseBxdf :public BxDF {
-	virtual inline float pdf(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) = 0;
-	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) = 0;
-	virtual inline Vector3f Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f& N, float& pdf) = 0;
+public:
+	virtual inline float pdf(const Vector3f& wi, const Vector3f& wo, const Vector3f& N);
+	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) ;
+	virtual inline Vector3f Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f& N, float& pdf);
 	Vector3f Kd;
 };
 

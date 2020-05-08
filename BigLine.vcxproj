@@ -150,12 +150,15 @@
     <ClInclude Include="src\BVH.hpp" />
     <ClInclude Include="src\Bxdf.hpp" />
     <ClInclude Include="src\DiffuseBxdf.hpp" />
+    <ClInclude Include="src\EmssionBxdf.hpp" />
     <ClInclude Include="src\global.hpp" />
     <ClInclude Include="src\Intersection.hpp" />
     <ClInclude Include="src\Light.hpp" />
     <ClInclude Include="src\MateialGlass.hpp" />
     <ClInclude Include="src\MateialMirror.hpp" />
     <ClInclude Include="src\Material.hpp" />
+    <ClInclude Include="src\MetalBxdf.hpp" />
+    <ClInclude Include="src\MirrorBxdf.hpp" />
     <ClInclude Include="src\Object.hpp" />
     <ClInclude Include="src\OBJ_Loader.hpp" />
     <ClInclude Include="src\Ray.hpp" />

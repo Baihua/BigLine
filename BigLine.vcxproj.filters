@@ -66,6 +66,15 @@
     <ClInclude Include="src\Bxdf.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\EmssionBxdf.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MirrorBxdf.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MetalBxdf.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BVH.cpp">

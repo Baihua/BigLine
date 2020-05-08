@@ -8,7 +8,9 @@
 #include "MateialMirror.hpp"
 #include "MateialGlass.hpp"
 #include "SceneDataLoad.hpp"
-
+#include "DiffuseBxdf.hpp"
+#include "EmssionBxdf.hpp"
+#include "MirrorBxdf.hpp"
 // In the main function of the program, we create the scene (create objects and
 // lights) as well as set the options for the render (image width and height,
 // maximum recursion depth, field-of-view, etc.). We then call the render
@@ -23,40 +25,64 @@ int main(int argc, char** argv)
 	//Scene scene(256, 256);
 	SceneDataLoad sl;
 	//sl.Load("./scene/cornell-box.txt");
-	sl.Load("./scene/mis.xml");
-	Material* metal = new Material(MICROFACET, Vector3f(0.0f));
-	metal->ior = 20;
-	metal->Roughness = 0.3;
-	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
-	red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
-	Material* green = new Material(DIFFUSE, Vector3f(0.0f));
-	green->Kd = Vector3f(0.14f, 0.45f, 0.091f);
-	Material* white = new Material(DIFFUSE, Vector3f(0.0f));
-	white->Kd = Vector3f(0.725f, 0.71f, 0.68f);
-	Material* light = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
-	light->Kd = Vector3f(0.65f);
-	MateialMirror* mirror = new MateialMirror();
-	mirror->reflectance = Vector3f(0.9f);
+	sl.Load("./scene/mis2.xml");
+	//Material* metal = new Material(MICROFACET, Vector3f(0.0f));
+	//metal->ior = 20;
+	//metal->Roughness = 0.3;
+	//Material* red = new Material(DIFFUSE, Vector3f(0.0f));
+	//red->Kd = Vector3f(0.63f, 0.065f, 0.05f);
+	//Material* green = new Material(DIFFUSE, Vector3f(0.0f));
+	//green->Kd = Vector3f(0.14f, 0.45f, 0.091f);
+	//Material* white = new Material(DIFFUSE, Vector3f(0.0f));
+	//white->Kd = Vector3f(0.725f, 0.71f, 0.68f);
+	//Material* light = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
+	//light->Kd = Vector3f(0.65f);
 
-	MateialGlass* glass = new MateialGlass();
-	glass->reflectance = Vector3f(0.9f);
-	glass->ior = 1.5f;
+
+	
+
+	
+	//MateialGlass* glass = new MateialGlass();
+	//glass->reflectance = Vector3f(0.9f);
+	//glass->ior = 1.5f;
+
+	Material* green = new Material(DIFFUSE, Vector3f(0.0f));
+	DiffuseBxdf* green_ = new DiffuseBxdf();
+	green_->Kd = Vector3f(0.14f, 0.45f, 0.091f);
+	green->bxdf = green_;
+	
+	Material* white = new Material(DIFFUSE, Vector3f(0.0f));
+	DiffuseBxdf* diffus = new DiffuseBxdf();
+	diffus->Kd = Vector3f(0.725f, 0.71f, 0.68f);
+	white->bxdf = diffus;
+
+	MateialMirror* mirror = new MateialMirror();
+	MirrorBxdf* mirror_ = new MirrorBxdf();
+	mirror_->reflectance = Vector3f(0.9);
+	mirror->bxdf = mirror_;
+
+	Material* light = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
+	EmissionBxdf* emission = new EmissionBxdf();
+	emission->emission = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
+	light->bxdf = emission;
+
+	//sl.objects["floor"]->SetMaterial(white);
+	//sl.objects["back"]->SetMaterial(white);
+
+	//sl.objects["p1"]->SetMaterial(white);
+	//sl.objects["p2"]->SetMaterial(white);
+	//sl.objects["p3"]->SetMaterial(white);
+	//sl.objects["p4"]->SetMaterial(white);
+
+	//sl.objects["small"]->SetMaterial(light);
+	//sl.objects["middle"]->SetMaterial(light);
+	//sl.objects["big"]->SetMaterial(light);
+
 
 	sl.objects["floor"]->SetMaterial(white);
-	sl.objects["back"]->SetMaterial(white);
-	
-	sl.objects["p1"]->SetMaterial(metal);
-	sl.objects["p2"]->SetMaterial(white);
-	sl.objects["p3"]->SetMaterial(white);
-	sl.objects["p4"]->SetMaterial(white);
-
-	sl.objects["small"]->SetMaterial(light);
 	sl.objects["middle"]->SetMaterial(light);
-	sl.objects["big"]->SetMaterial(light);
-
-
-	//sl.objects["mr"]->SetMaterial(mirror);
-	//sl.objects["df"]->SetMaterial(green);
+	sl.objects["mr"]->SetMaterial(mirror);
+	sl.objects["df"]->SetMaterial(green);
 
 	for (auto item : sl.objects) {
 		scene.Add(item.second);
@@ -150,7 +176,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(16, 4);//设置SPP与线程数
+	r.SetSomeSetting(64, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

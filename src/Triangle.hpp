@@ -83,7 +83,7 @@ public:
 		return area;
 	}
 	bool hasEmit() {
-		return m->hasEmission();
+		return m->bxdf != NULL ? m->bxdf->hasEmission():false;
 	}
 	virtual void SetMaterial(Material* mat) {
 		m = mat;
@@ -282,13 +282,13 @@ public:
 
 	void Sample(Intersection& pos, float& pdf) {
 		bvh->Sample(pos, pdf);
-		pos.emit = m->getEmission();
+		pos.emit = m->bxdf != NULL ? m->bxdf->getEmission(): Vector3f(0);
 	}
 	float getArea() {
 		return area;
 	}
 	bool hasEmit() {
-		return m->hasEmission();
+		return m->bxdf != NULL ? m->bxdf->hasEmission() : false;
 	}
 	
 	virtual void SetMaterial(Material* m)

@@ -73,7 +73,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 
 	if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
 	{
-		return hitObjInter.m->getEmission();
+		return bxdf->getEmission();
 	}
 	Vector3f wo = -ray.direction;
 	Vector3f p = hitObjInter.coords;
@@ -114,14 +114,14 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			Intersection intersect = this->intersect(r);
 			if (intersect.happened)
 			{
-				if (!intersect.obj->hasEmit() || hitObjInter.m->hasPerfectSpecula()) {
+				if (!intersect.obj->hasEmit() || bxdf->IsDelat()) {
 
-					L_indir = castRay(r, depth + 1, hitObjInter.m->hasPerfectSpecula()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
+					L_indir = castRay(r, depth + 1,bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
 				}
 			}
 		}
 	}
-	if (hitObjInter.m->hasPerfectSpecula() || !rrTest) { weightLightSimple = 1, weightBxdfSimple = 1; }
+	if (bxdf->IsDelat() || !rrTest) { weightLightSimple = 1, weightBxdfSimple = 1; }
 	else
 	{
 		weightLightSimple = PowerHeuistic(1, lightPdf, 1, bxdfPdf);//BalanceHeuristic(1, lightPdf, 1, bxdfPdf);

@@ -89,14 +89,14 @@ public:
         Vector3f dir(std::cos(phi), std::sin(phi)*std::cos(theta), std::sin(phi)*std::sin(theta));
         pos.coords = center + radius * dir;
         pos.normal = dir;
-        pos.emit = m->getEmission();
+        pos.emit = m->bxdf != NULL ? m->bxdf->getEmission(): Vector3f(0);
         pdf = 1.0f / area;
     }
     float getArea(){
         return area;
     }
     bool hasEmit(){
-        return m->hasEmission();
+        return m->bxdf != NULL ? m->bxdf->hasEmission():false;
     }
     virtual void SetMaterial(Material* mat) {
         m = mat;
