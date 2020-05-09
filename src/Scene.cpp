@@ -67,7 +67,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
 		return Vector3f();
-	
+
 	BxDF* bxdf = hitObjInter.m->bxdf;
 	if (bxdf == NULL) return Vector3f();
 
@@ -91,7 +91,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f o = p + n * 0.001;
 	Ray hitTest(p, ws);
 	Intersection hit = intersect(hitTest);
-	if (!hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
+	if (hit.obj == lightInter.obj || !hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
 		float d1 = std::max(0.0f, dotProduct(n, ws));
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
 		L_dir = emit * bxdf->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
@@ -101,26 +101,26 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f L_indir;
 	float bxdfPdf = 0;
 	bool rrTest = false;
-	if (get_random_float() < RussianRoulette)//test rrp
-	{
+	//if (get_random_float() < RussianRoulette)//test rrp
+	//{
 
-		Vector3f wi;
-		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
-		if (!value.isAllZero())
-		{
-			rrTest = true;
-			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
-			Ray r(o, wi);
-			Intersection intersect = this->intersect(r);
-			if (intersect.happened)
-			{
-				if (!intersect.obj->hasEmit() || bxdf->IsDelat()) {
+	//	Vector3f wi;
+	//	Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
+	//	if (!value.isAllZero())
+	//	{
+	//		rrTest = true;
+	//		Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
+	//		Ray r(o, wi);
+	//		Intersection intersect = this->intersect(r);
+	//		if (intersect.happened)
+	//		{
+	//			if (!intersect.obj->hasEmit() || bxdf->IsDelat()) {
 
-					L_indir = castRay(r, depth + 1,bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
-				}
-			}
-		}
-	}
+	//				L_indir = castRay(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
+	//			}
+	//		}
+	//	}
+	//}
 	if (bxdf->IsDelat() || !rrTest) { weightLightSimple = 1, weightBxdfSimple = 1; }
 	else
 	{
