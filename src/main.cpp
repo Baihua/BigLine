@@ -83,31 +83,53 @@ int main(int argc, char** argv)
 	emissionYellow->emission = (200.0f * Vector3f(0.0f,0,1.0));
 	lightYellow->bxdf = emissionYellow;
 
-	Material* metal = new Material();
-	Microfacet* mf = new Microfacet();
-	mf->reflectance = Vector3f(0.8,0.8,0.8);
-	mf->ior = 20;
-	mf->roughness = 0.5;
-	metal->bxdf = mf;
+	Material* metal1 = new Material();
+	Microfacet* mf1 = new Microfacet();
+	mf1->reflectance = Vector3f(0.8,0.8,0.8);
+	mf1->ior = 20;
+	mf1->SetRoughness(0.1);
+	metal1->bxdf = mf1;
+	
+	Material* metal2 = new Material();
+	Microfacet* mf2 = new Microfacet();
+	mf2->reflectance = Vector3f(0.8, 0.8, 0.8);
+	mf2->ior = 20;
+	mf2->SetRoughness(0.2);
+	metal2->bxdf = mf2;
+
+	Material* metal3 = new Material();
+	Microfacet* mf3 = new Microfacet();
+	mf3->reflectance = Vector3f(0.8, 0.8, 0.8);
+	mf3->ior = 20;
+	mf3->SetRoughness(0.3);
+	metal3->bxdf = mf3;
+
+	Material* metal4 = new Material();
+	Microfacet* mf4 = new Microfacet();
+	mf4->reflectance = Vector3f(0.8, 0.8, 0.8);
+	mf4->ior = 20;
+	mf4->SetRoughness(0.4);
+	metal4->bxdf = mf4;
+
 	sl.Load("./scene/mis.xml");
 	sl.objects["floor"]->SetMaterial(white);
 	sl.objects["back"]->SetMaterial(white);
 
-	sl.objects["p1"]->SetMaterial(metal);
-	sl.objects["p2"]->SetMaterial(metal);
-	sl.objects["p3"]->SetMaterial(metal);
-	sl.objects["p4"]->SetMaterial(metal);
+	sl.objects["p1"]->SetMaterial(metal1);
+	sl.objects["p2"]->SetMaterial(metal2);
+	sl.objects["p3"]->SetMaterial(metal3);
+	sl.objects["p4"]->SetMaterial(metal4);
 
 	sl.objects["small"]->SetMaterial(lightGreen);
 	sl.objects["middle"]->SetMaterial(lightYellow);
 	sl.objects["big"]->SetMaterial(lightRed);
 
-/*
-	sl.Load("./scene/mis.xml");
-	sl.objects["floor"]->SetMaterial(metal);
-	sl.objects["middle"]->SetMaterial(light);
-	sl.objects["mr"]->SetMaterial(metal);
-	sl.objects["df"]->SetMaterial(green)*/;
+
+	//sl.Load("./scene/mis2.xml");
+	//sl.objects["floor"]->SetMaterial(white);
+	//sl.objects["middle"]->SetMaterial(light);
+	//sl.objects["mr"]->SetMaterial(metal1);
+	//sl.objects["df"]->SetMaterial(green)/**/;
 
 	for (auto item : sl.objects) {
 		scene.Add(item.second);
@@ -201,7 +223,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(16, 4);//设置SPP与线程数
+	r.SetSomeSetting(64, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

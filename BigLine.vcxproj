@@ -158,6 +158,7 @@
     <ClInclude Include="src\MateialMirror.hpp" />
     <ClInclude Include="src\Material.hpp" />
     <ClInclude Include="src\MetalBxdf.hpp" />
+    <ClInclude Include="src\MicrofacetDistribution.hpp" />
     <ClInclude Include="src\MirrorBxdf.hpp" />
     <ClInclude Include="src\Object.hpp" />
     <ClInclude Include="src\OBJ_Loader.hpp" />

@@ -75,6 +75,9 @@
     <ClInclude Include="src\MetalBxdf.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\MicrofacetDistribution.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BVH.cpp">

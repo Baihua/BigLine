@@ -57,12 +57,11 @@ bool Scene::trace(
 
 	return (*hitObject != nullptr);
 }
-
 // Implementation of Path Tracing
 Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 {
 
-	float weightLightSimple = 0, weightBxdfSimple = 0;
+	float weightLightSimple = 1, weightBxdfSimple =1;
 	float lightPdf = 0;
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
@@ -71,10 +70,13 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	BxDF* bxdf = hitObjInter.m->bxdf;
 	if (bxdf == NULL) return Vector3f();
 
-	if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
+
+	//if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
+	if (bxdf->hasEmission())
 	{
 		return bxdf->getEmission();
 	}
+
 	Vector3f wo = -ray.direction;
 	Vector3f p = hitObjInter.coords;
 	Vector3f n = hitObjInter.normal;
@@ -91,7 +93,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f o = p + n * 0.001;
 	Ray hitTest(p, ws);
 	Intersection hit = intersect(hitTest);
-	if (hit.obj == lightInter.obj || !hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
+	if (!hit.happened || fabs(hit.distance) < EPSILON || hit.distance > distance - EPSILON) {
 		float d1 = std::max(0.0f, dotProduct(n, ws));
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
 		L_dir = emit * bxdf->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
@@ -101,26 +103,27 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f L_indir;
 	float bxdfPdf = 0;
 	bool rrTest = false;
-	//if (get_random_float() < RussianRoulette)//test rrp
-	//{
+	if (get_random_float() < RussianRoulette)//test rrp
+	{
 
-	//	Vector3f wi;
-	//	Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
-	//	if (!value.isAllZero())
-	//	{
-	//		rrTest = true;
-	//		Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
-	//		Ray r(o, wi);
-	//		Intersection intersect = this->intersect(r);
-	//		if (intersect.happened)
-	//		{
-	//			if (!intersect.obj->hasEmit() || bxdf->IsDelat()) {
+		Vector3f wi;
+		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
+		if (!value.isAllZero())
+		{
+			rrTest = true;
+			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
+			Ray r(o, wi);
+			Intersection intersect = this->intersect(r);
+			if (intersect.happened)
+			{
+				//if (!intersect.obj->hasEmit() || bxdf->IsDelat())
+				{
 
-	//				L_indir = castRay(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
-	//			}
-	//		}
-	//	}
-	//}
+					L_indir = castRay(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
+				}
+			}
+		}
+	}
 	if (bxdf->IsDelat() || !rrTest) { weightLightSimple = 1, weightBxdfSimple = 1; }
 	else
 	{
@@ -129,6 +132,51 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 		//weightLightSimple = 1, weightBxdfSimple = 1;
 	}
 	return L_dir * weightLightSimple + L_indir * weightBxdfSimple;
+}
+// Implementation of Path Tracing
+Vector3f Scene::castRay2(const Ray& ray, int depth, bool isPerfectSpecular) const
+{
+
+	float lightPdf = 0;
+	Intersection hitObjInter = this->intersect(ray);
+	if (!hitObjInter.happened)
+		return Vector3f();
+
+	BxDF* bxdf = hitObjInter.m->bxdf;
+	if (bxdf == NULL) return Vector3f();
+	if (bxdf->hasEmission() )
+	{
+		return bxdf->getEmission();
+	}
+
+	Vector3f wo = -ray.direction;
+	Vector3f p = hitObjInter.coords;
+	Vector3f n = hitObjInter.normal;
+
+
+
+
+	Vector3f L_indir;
+	float bxdfPdf = 0;
+	bool rrTest = false;
+	
+	if(depth < 1280)
+	{
+		Vector3f wi;
+		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
+		if (!value.isAllZero())
+		{
+			rrTest = true;
+			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
+			Ray r(o, wi);
+			Intersection intersect = this->intersect(r);
+			if (intersect.happened)
+			{
+				L_indir = castRay2(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
+			}
+		}
+	}
+	return  L_indir;
 }
 
 //Vector3f Scene::shade(Vector3f pos, Vector3f wo) {

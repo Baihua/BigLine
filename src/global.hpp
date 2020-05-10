@@ -83,3 +83,19 @@ inline Vector3f reflect(const Vector3f& I, const Vector3f& N)
 {
 	return I - 2 * dotProduct(I, N) * N;
 }
+
+inline Vector3f SphericalDirection(float sinTheta, float cosTheta, float phi) {
+	return Vector3f(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta);
+}
+
+
+inline float CosTheta(const Vector3f& w, const Vector3f& n) { return dotProduct(w, n); }
+
+inline float Cos2Theta(const Vector3f& w, const Vector3f& n) { return dotProduct(w, n) * dotProduct(w, n); }
+
+inline float AbsCosTheta(const Vector3f& w, const Vector3f& n) { return std::abs(dotProduct(w, n)); }
+
+inline float Sin2Theta(const Vector3f& w, const Vector3f& n) { return 1.f - Cos2Theta(w,n); }
+inline float SinTheta(const Vector3f& w, const Vector3f& n) { return std::sqrt(Sin2Theta(w,n)); }
+inline float TanTheta(const Vector3f& w, const Vector3f& n) { return SinTheta(w,n) / CosTheta(w,n); }
+inline float Tan2Theta(const Vector3f& w, const Vector3f& n) { return 1 / Cos2Theta(w,n) - 1; }
