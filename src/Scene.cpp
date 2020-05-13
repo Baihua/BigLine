@@ -76,46 +76,44 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	{
 		return bxdf->getEmission();
 	}
-
-	//进行光源采样
+	int numLight = lights.size();
 	Vector3f wo = -ray.direction;
 	Vector3f p = hitObjInter.coords;
 	Vector3f n = hitObjInter.normal;
-
-	int numLight = lights.size();
-	int randOneLight = get_random_float() * numLight;
-	Light* selectLight = lights[randOneLight];
-	Vector3f wi;
 	float dis, pdf;
-	Vector3f l = selectLight->Sample_Li(p, wi, dis, pdf);
-	pdf *= 1.0f / numLight;
-	if (l.isAllZero() || pdf <= 0) { L = Vector3f(0); }
-	else {
-		//可见性判断
-		Vector3f o = p + n * 0.001;
-		Ray hitTest(o, wi);
-		Intersection hit = intersect(hitTest);
-		if (abs(hit.distance - dis) < EPSILON) {
-			Vector3f f = bxdf->F(wi, wo, n);
-			if (f.isAllZero())
-				L = Vector3f(0);
-			else
-			{
-				float scatteringpdf = bxdf->pdf(wi, wo, n);
-				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
-				L = l * f * dotProduct(wi, n) * weight / pdf;
-			}
-		}
-		else
-		{
-			L = Vector3f(0);
-		}
-	}
+
+	////进行光源采样
+	//int randOneLight = std::rand() % numLight;
+	//Light* selectLight = lights[randOneLight];
+	//Vector3f wi;
+	//Vector3f l = selectLight->Sample_Li(p, wi, dis, pdf);
+	//pdf *= 1.0f / numLight;
+	//if (l.isAllZero() || pdf <= 0) { L = Vector3f(0); }
+	//else {
+	//	//可见性判断
+	//	Vector3f o = p + n * 0.001;
+	//	Ray hitTest(o, wi);
+	//	Intersection hit = intersect(hitTest);
+	//	if (abs(hit.distance - dis) < EPSILON) {
+	//		Vector3f f = bxdf->F(wi, wo, n);
+	//		if (f.isAllZero())
+	//			L = Vector3f(0);
+	//		else
+	//		{
+	//			float scatteringpdf = bxdf->pdf(wi, wo, n);
+	//			float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
+	//			L = l * f * dotProduct(wi, n) * weight / pdf;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		L = Vector3f(0);
+	//	}
+	//}
 
 	//bxdf 采样
-	float bxdfPdf = 0;
 	Vector3f S = Vector3f(0);
-	if (depth < 3 || bxdf->IsDelat() || get_random_float() < RussianRoulette)//test rrp
+	if ( bxdf->IsDelat() || get_random_float() < RussianRoulette)//test rrp
 	{
 
 		float weight = 1, rr = RussianRoulette;
@@ -139,7 +137,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			else
 			{
 				weight = 1; rr = 1;
-			}
+			}weight = 1;
 			Vector3f  matF = f * castRay(r, depth + 1, bxdf->IsDelat()) * std::fabs(dotProduct(wi, n)) / pdf / rr;
 			S = matF * weight;
 		}

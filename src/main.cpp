@@ -53,6 +53,11 @@ int main(int argc, char** argv)
 	green_->Kd = Vector3f(0.14f, 0.45f, 0.091f);
 	green->bxdf = green_;
 
+	Material* red = new Material(DIFFUSE, Vector3f(0.0f));
+	DiffuseBxdf* red_ = new DiffuseBxdf();
+	red_->Kd = Vector3f(1.0f, 0.0f, 0.0f);
+	red->bxdf = red_;
+
 	Material* white = new Material(DIFFUSE, Vector3f(0.0f));
 	DiffuseBxdf* diffus = new DiffuseBxdf();
 	diffus->Kd = Vector3f(0.725f, 0.71f, 0.68f);
@@ -124,25 +129,25 @@ int main(int argc, char** argv)
 	//sl.objects["p4"]->SetMaterial(metal4);
 
 	//sl.objects["small"]->SetMaterial(lightGreen);
-	//DiffuseLight* light = new DiffuseLight();
-	//light->obj = sl.objects["small"];
-	//light->color = lightGreen->m_emission;
-	//sl.objects["small"]->light = light;
+	//DiffuseLight* light1 = new DiffuseLight();
+	//light1->obj = sl.objects["small"];
+	//light1->color = (500 * Vector3f(0, 1, 0));
+	//sl.objects["small"]->light = light1;
 
 	//sl.objects["middle"]->SetMaterial(lightYellow);
 	//DiffuseLight* light2 = new DiffuseLight();
 	//light2->obj = sl.objects["middle"];
-	//light2->color = lightYellow->m_emission;
+	//light2->color = (200.0f * Vector3f(0.0f, 0, 1.0));
 	//sl.objects["middle"]->light = light2;
 
 	//sl.objects["big"]->SetMaterial(lightRed);
 	//DiffuseLight* light3 = new DiffuseLight();
 	//light3->obj = sl.objects["big"];
-	//light3->color = lightRed->m_emission;
+	//light3->color = 20.0f * Vector3f(1, 0, 0);
 	//sl.objects["big"]->light = light3;
 
 	sl.Load("./scene/mis2.xml");
-	sl.objects["floor"]->SetMaterial(white);
+	sl.objects["floor"]->SetMaterial(red);
 	sl.objects["middle"]->SetMaterial(light);
 	DiffuseLight* ll = new DiffuseLight();
 	ll->obj = sl.objects["middle"];
@@ -225,7 +230,7 @@ int main(int argc, char** argv)
 
 
    /* //测试microfacet 场景
-	Material* metal = new Material(MICROFACET, Vector3f(0.0f));
+	Material* metal = new Material(MICROFACET, Vector3f(0.0f/
 	metal->ior = 20;
 	metal->Roughness = 0.8;
 	Sphere *sp = new Sphere(Vector3f(100, 100, 300), 100, metal);
@@ -243,7 +248,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(64, 4);//设置SPP与线程数
+	r.SetSomeSetting(128, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 
