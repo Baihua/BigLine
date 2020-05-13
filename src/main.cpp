@@ -12,7 +12,7 @@
 #include "EmssionBxdf.hpp"
 #include "MirrorBxdf.hpp"
 #include "MetalBxdf.hpp"
-
+#include "Light.hpp"
 // In the main function of the program, we create the scene (create objects and
 // lights) as well as set the options for the render (image width and height,
 // maximum recursion depth, field-of-view, etc.). We then call the render
@@ -41,9 +41,9 @@ int main(int argc, char** argv)
 	//light->Kd = Vector3f(0.65f);
 
 
-	
 
-	
+
+
 	//MateialGlass* glass = new MateialGlass();
 	//glass->reflectance = Vector3f(0.9f);
 	//glass->ior = 1.5f;
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	DiffuseBxdf* green_ = new DiffuseBxdf();
 	green_->Kd = Vector3f(0.14f, 0.45f, 0.091f);
 	green->bxdf = green_;
-	
+
 	Material* white = new Material(DIFFUSE, Vector3f(0.0f));
 	DiffuseBxdf* diffus = new DiffuseBxdf();
 	diffus->Kd = Vector3f(0.725f, 0.71f, 0.68f);
@@ -62,34 +62,37 @@ int main(int argc, char** argv)
 	MirrorBxdf* mirror_ = new MirrorBxdf();
 	mirror_->reflectance = Vector3f(0.9);
 	mirror->bxdf = mirror_;
-	 
+
 	Material* light = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
 	EmissionBxdf* emission = new EmissionBxdf();
 	emission->emission = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
 	light->bxdf = emission;
-	
+
+
 	Material* lightRed = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
 	EmissionBxdf* emissionRed = new EmissionBxdf();
-	emissionRed->emission = 20.0f * Vector3f(1,0,0);
+	emissionRed->emission = 20.0f * Vector3f(1, 0, 0);
+	//light->color = 20.0f * Vector3f(1, 0, 0);
 	lightRed->bxdf = emissionRed;
+
 
 	Material* lightGreen = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
 	EmissionBxdf* emissionGreen = new EmissionBxdf();
-	emissionGreen->emission = (500 * Vector3f(0,1,0));
+	emissionGreen->emission = (500 * Vector3f(0, 1, 0));
 	lightGreen->bxdf = emissionGreen;
 
 	Material* lightYellow = new Material(DIFFUSE, (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
 	EmissionBxdf* emissionYellow = new EmissionBxdf();
-	emissionYellow->emission = (200.0f * Vector3f(0.0f,0,1.0));
+	emissionYellow->emission = (200.0f * Vector3f(0.0f, 0, 1.0));
 	lightYellow->bxdf = emissionYellow;
 
 	Material* metal1 = new Material();
 	Microfacet* mf1 = new Microfacet();
-	mf1->reflectance = Vector3f(0.8,0.8,0.8);
+	mf1->reflectance = Vector3f(0.8, 0.8, 0.8);
 	mf1->ior = 20;
 	mf1->SetRoughness(0.1);
 	metal1->bxdf = mf1;
-	
+
 	Material* metal2 = new Material();
 	Microfacet* mf2 = new Microfacet();
 	mf2->reflectance = Vector3f(0.8, 0.8, 0.8);
@@ -111,25 +114,42 @@ int main(int argc, char** argv)
 	mf4->SetRoughness(0.4);
 	metal4->bxdf = mf4;
 
-	sl.Load("./scene/mis.xml");
-	sl.objects["floor"]->SetMaterial(white);
-	sl.objects["back"]->SetMaterial(white);
-
-	sl.objects["p1"]->SetMaterial(metal1);
-	sl.objects["p2"]->SetMaterial(metal2);
-	sl.objects["p3"]->SetMaterial(metal3);
-	sl.objects["p4"]->SetMaterial(metal4);
-
-	sl.objects["small"]->SetMaterial(lightGreen);
-	sl.objects["middle"]->SetMaterial(lightYellow);
-	sl.objects["big"]->SetMaterial(lightRed);
-
-
-	//sl.Load("./scene/mis2.xml");
+	//sl.Load("./scene/mis.xml");
 	//sl.objects["floor"]->SetMaterial(white);
-	//sl.objects["middle"]->SetMaterial(light);
-	//sl.objects["mr"]->SetMaterial(metal1);
-	//sl.objects["df"]->SetMaterial(green)/**/;
+	//sl.objects["back"]->SetMaterial(white);
+
+	//sl.objects["p1"]->SetMaterial(metal1);
+	//sl.objects["p2"]->SetMaterial(metal2);
+	//sl.objects["p3"]->SetMaterial(metal3);
+	//sl.objects["p4"]->SetMaterial(metal4);
+
+	//sl.objects["small"]->SetMaterial(lightGreen);
+	//DiffuseLight* light = new DiffuseLight();
+	//light->obj = sl.objects["small"];
+	//light->color = lightGreen->m_emission;
+	//sl.objects["small"]->light = light;
+
+	//sl.objects["middle"]->SetMaterial(lightYellow);
+	//DiffuseLight* light2 = new DiffuseLight();
+	//light2->obj = sl.objects["middle"];
+	//light2->color = lightYellow->m_emission;
+	//sl.objects["middle"]->light = light2;
+
+	//sl.objects["big"]->SetMaterial(lightRed);
+	//DiffuseLight* light3 = new DiffuseLight();
+	//light3->obj = sl.objects["big"];
+	//light3->color = lightRed->m_emission;
+	//sl.objects["big"]->light = light3;
+
+	sl.Load("./scene/mis2.xml");
+	sl.objects["floor"]->SetMaterial(white);
+	sl.objects["middle"]->SetMaterial(light);
+	DiffuseLight* ll = new DiffuseLight();
+	ll->obj = sl.objects["middle"];
+	ll->color = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
+	sl.objects["middle"]->light = ll;
+	sl.objects["mr"]->SetMaterial(metal1);
+	sl.objects["df"]->SetMaterial(green)/**/;
 
 	for (auto item : sl.objects) {
 		scene.Add(item.second);

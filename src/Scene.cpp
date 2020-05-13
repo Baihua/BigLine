@@ -57,11 +57,100 @@ bool Scene::trace(
 
 	return (*hitObject != nullptr);
 }
-// Implementation of Path Tracing
+
+
 Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 {
+	Intersection hitObjInter = this->intersect(ray);
+	if (!hitObjInter.happened)
+		return Vector3f();
 
-	float weightLightSimple = 1, weightBxdfSimple =1;
+
+	BxDF* bxdf = hitObjInter.m->bxdf;
+	if (bxdf == NULL) return Vector3f();
+
+	Vector3f L;
+
+	//if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
+	if (bxdf->hasEmission())
+	{
+		return bxdf->getEmission();
+	}
+
+	//进行光源采样
+	Vector3f wo = -ray.direction;
+	Vector3f p = hitObjInter.coords;
+	Vector3f n = hitObjInter.normal;
+
+	int numLight = lights.size();
+	int randOneLight = get_random_float() * numLight;
+	Light* selectLight = lights[randOneLight];
+	Vector3f wi;
+	float dis, pdf;
+	Vector3f l = selectLight->Sample_Li(p, wi, dis, pdf);
+	pdf *= 1.0f / numLight;
+	if (l.isAllZero() || pdf <= 0) { L = Vector3f(0); }
+	else {
+		//可见性判断
+		Vector3f o = p + n * 0.001;
+		Ray hitTest(o, wi);
+		Intersection hit = intersect(hitTest);
+		if (abs(hit.distance - dis) < EPSILON) {
+			Vector3f f = bxdf->F(wi, wo, n);
+			if (f.isAllZero())
+				L = Vector3f(0);
+			else
+			{
+				float scatteringpdf = bxdf->pdf(wi, wo, n);
+				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
+				L = l * f * dotProduct(wi, n) * weight / pdf;
+			}
+		}
+		else
+		{
+			L = Vector3f(0);
+		}
+	}
+
+	//bxdf 采样
+	float bxdfPdf = 0;
+	Vector3f S = Vector3f(0);
+	if (depth < 3 || bxdf->IsDelat() || get_random_float() < RussianRoulette)//test rrp
+	{
+
+		float weight = 1, rr = RussianRoulette;
+		Vector3f wi;
+		Vector3f f = bxdf->Sample_f(wo, wi, n, pdf);
+		if (f.isAllZero() || pdf <= 0)
+			S = Vector3f(0);
+		else {
+			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
+			Ray r(o, wi);
+			if (!bxdf->IsDelat()) {
+				float scale = 1.0f / numLight;
+				float lightPdf = 0;
+				for (Light* l : lights) {
+					if (!l->IsDelta())
+						lightPdf += l->Pdf(p, wi) * scale;
+				}
+				weight = PowerHeuistic(1, pdf, 1, lightPdf);
+				rr = RussianRoulette;
+			}
+			else
+			{
+				weight = 1; rr = 1;
+			}
+			Vector3f  matF = f * castRay(r, depth + 1, bxdf->IsDelat()) * std::fabs(dotProduct(wi, n)) / pdf / rr;
+			S = matF * weight;
+		}
+	}
+	return L + S;
+}
+
+// 直接光照与间接光照分开
+Vector3f Scene::castRayDir_InDir(const Ray& ray, int depth, bool isPerfectSpecular) const
+{
+
 	float lightPdf = 0;
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
@@ -71,8 +160,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	if (bxdf == NULL) return Vector3f();
 
 
-	//if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
-	if (bxdf->hasEmission())
+	if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
 	{
 		return bxdf->getEmission();
 	}
@@ -116,23 +204,17 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			Intersection intersect = this->intersect(r);
 			if (intersect.happened)
 			{
-				//if (!intersect.obj->hasEmit() || bxdf->IsDelat())
+				if (!intersect.obj->hasEmit() || bxdf->IsDelat())
 				{
-
-					L_indir = castRay(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
+					L_indir = castRayDir_InDir(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
 				}
 			}
 		}
 	}
-	if (bxdf->IsDelat() || !rrTest) { weightLightSimple = 1, weightBxdfSimple = 1; }
-	else
-	{
-		weightLightSimple = PowerHeuistic(1, lightPdf, 1, bxdfPdf);//BalanceHeuristic(1, lightPdf, 1, bxdfPdf);
-		weightBxdfSimple = 1 - weightLightSimple;
-		//weightLightSimple = 1, weightBxdfSimple = 1;
-	}
-	return L_dir * weightLightSimple + L_indir * weightBxdfSimple;
+
+	return L_dir + L_indir;
 }
+
 // Implementation of Path Tracing
 Vector3f Scene::castRay2(const Ray& ray, int depth, bool isPerfectSpecular) const
 {
@@ -144,7 +226,7 @@ Vector3f Scene::castRay2(const Ray& ray, int depth, bool isPerfectSpecular) cons
 
 	BxDF* bxdf = hitObjInter.m->bxdf;
 	if (bxdf == NULL) return Vector3f();
-	if (bxdf->hasEmission() )
+	if (bxdf->hasEmission())
 	{
 		return bxdf->getEmission();
 	}
@@ -159,8 +241,8 @@ Vector3f Scene::castRay2(const Ray& ray, int depth, bool isPerfectSpecular) cons
 	Vector3f L_indir;
 	float bxdfPdf = 0;
 	bool rrTest = false;
-	
-	if(depth < 1280)
+
+	if (depth < 1280)
 	{
 		Vector3f wi;
 		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);

@@ -73,7 +73,8 @@ void Renderer::TheadRender(int beginRow, int endRow) {
 				Vector3f dir = normalize(Vector3f(x, y, 1)
 				);
 
-				framebuffer[m] += pScene->castRay(Ray(eye_pos, dir), 0) / SPP;
+				//framebuffer[m] += pScene->castRayDir_InDir(Ray(eye_pos, dir), 0, false) / SPP;
+				framebuffer[m] += pScene->castRay(Ray(eye_pos, dir), 0, false) / SPP;
 			}
 			m++;
 		}
