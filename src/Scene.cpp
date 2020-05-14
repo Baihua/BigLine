@@ -82,45 +82,46 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f n = hitObjInter.normal;
 	float dis, pdf;
 
-	////进行光源采样
-	//int randOneLight = std::rand() % numLight;
-	//Light* selectLight = lights[randOneLight];
-	//Vector3f wi;
-	//Vector3f l = selectLight->Sample_Li(p, wi, dis, pdf);
-	//pdf *= 1.0f / numLight;
-	//if (l.isAllZero() || pdf <= 0) { L = Vector3f(0); }
-	//else {
-	//	//可见性判断
-	//	Vector3f o = p + n * 0.001;
-	//	Ray hitTest(o, wi);
-	//	Intersection hit = intersect(hitTest);
-	//	if (abs(hit.distance - dis) < EPSILON) {
-	//		Vector3f f = bxdf->F(wi, wo, n);
-	//		if (f.isAllZero())
-	//			L = Vector3f(0);
-	//		else
-	//		{
-	//			float scatteringpdf = bxdf->pdf(wi, wo, n);
-	//			float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
-	//			L = l * f * dotProduct(wi, n) * weight / pdf;
-	//		}
-	//	}
-	//	else
-	//	{
-	//		L = Vector3f(0);
-	//	}
-	//}
+	//进行光源采样
+	int randOneLight = std::rand() % numLight;
+	Light* selectLight = lights[randOneLight];
+	Vector3f wi;
+	Vector3f l = selectLight->Sample_Li(p, wi, dis, pdf);
+	pdf *= 1.0f / numLight;
+	if (l.isAllZero() || pdf <= 0) { L = Vector3f(0); }
+	else {
+		//可见性判断
+		Vector3f o = p + n * 0.001;
+		Ray hitTest(o, wi);
+		Intersection hit = intersect(hitTest);
+		if (abs(hit.distance - dis) < EPSILON) {
+			Vector3f f = bxdf->F(wi, wo, n);
+			if (f.isAllZero())
+				L = Vector3f(0);
+			else
+			{
+				float scatteringpdf = bxdf->pdf(wi, wo, n);
+				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
+				L = l * f * dotProduct(wi, n) * weight / pdf;
+			}
+		}
+		else
+		{
+			L = Vector3f(0);
+		}
+	}
 
 	//bxdf 采样
 	Vector3f S = Vector3f(0);
-	if ( bxdf->IsDelat() || get_random_float() < RussianRoulette)//test rrp
+	if (bxdf->IsDelat() || get_random_float() < RussianRoulette)//test rrp
 	{
 
 		float weight = 1, rr = RussianRoulette;
 		Vector3f wi;
 		Vector3f f = bxdf->Sample_f(wo, wi, n, pdf);
-		if (f.isAllZero() || pdf <= 0)
+		if (f.isAllZero() || pdf <= 0) {
 			S = Vector3f(0);
+		}
 		else {
 			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
 			Ray r(o, wi);
@@ -137,8 +138,8 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			else
 			{
 				weight = 1; rr = 1;
-			}weight = 1;
-			Vector3f  matF = f * castRay(r, depth + 1, bxdf->IsDelat()) * std::fabs(dotProduct(wi, n)) / pdf / rr;
+			}
+			Vector3f  matF = castRay(r, depth + 1, bxdf->IsDelat()) * f * std::fabs(dotProduct(wi, n)) / pdf / rr;
 			S = matF * weight;
 		}
 	}
@@ -184,14 +185,12 @@ Vector3f Scene::castRayDir_InDir(const Ray& ray, int depth, bool isPerfectSpecul
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
 		L_dir = emit * bxdf->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
 	}
-
-
+	
 	Vector3f L_indir;
 	float bxdfPdf = 0;
 	bool rrTest = false;
 	if (get_random_float() < RussianRoulette)//test rrp
 	{
-
 		Vector3f wi;
 		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
 		if (!value.isAllZero())
@@ -216,8 +215,6 @@ Vector3f Scene::castRayDir_InDir(const Ray& ray, int depth, bool isPerfectSpecul
 // Implementation of Path Tracing
 Vector3f Scene::castRay2(const Ray& ray, int depth, bool isPerfectSpecular) const
 {
-
-	float lightPdf = 0;
 	Intersection hitObjInter = this->intersect(ray);
 	if (!hitObjInter.happened)
 		return Vector3f();
@@ -228,35 +225,26 @@ Vector3f Scene::castRay2(const Ray& ray, int depth, bool isPerfectSpecular) cons
 	{
 		return bxdf->getEmission();
 	}
-
 	Vector3f wo = -ray.direction;
 	Vector3f p = hitObjInter.coords;
 	Vector3f n = hitObjInter.normal;
-
-
-
-
-	Vector3f L_indir;
+	Vector3f L;
 	float bxdfPdf = 0;
-	bool rrTest = false;
 
-	if (depth < 1280)
+	if (get_random_float() < RussianRoulette)
 	{
 		Vector3f wi;
-		Vector3f value = bxdf->Sample_f(wo, wi, n, bxdfPdf);
-		if (!value.isAllZero())
+		Vector3f f = bxdf->Sample_f(wo, wi, n, bxdfPdf);
+		if (bxdfPdf <= 0) { L = Vector3f(0); }
+		else
 		{
-			rrTest = true;
 			Vector3f o = dotProduct(wi, n) > 0 ? p + n * 0.001f : p - n * 0.001f;
 			Ray r(o, wi);
 			Intersection intersect = this->intersect(r);
-			if (intersect.happened)
-			{
-				L_indir = castRay2(r, depth + 1, bxdf->IsDelat()) * value * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
-			}
+			L = castRay2(r, depth + 1, bxdf->IsDelat()) * f * fabs(dotProduct(wi, n)) / bxdfPdf / RussianRoulette;
 		}
 	}
-	return  L_indir;
+	return  L;
 }
 
 //Vector3f Scene::shade(Vector3f pos, Vector3f wo) {

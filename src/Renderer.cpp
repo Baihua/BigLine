@@ -7,6 +7,7 @@
 #include "Renderer.hpp"
 #include <thread>
 #include <time.h>
+#include <string>
 
 inline float deg2rad(const float& deg) { return deg * M_PI / 180.0; }
 
@@ -42,9 +43,11 @@ void Renderer::Render(const Scene& scene)
 
 	UpdateProgress(1.f);
 	time_t t = time(0);
-	char tmp[64] = { NULL };
-	strftime(tmp, sizeof(tmp), "outputImages/%Y-%m-%d-%H-%M.ppm", localtime(&t));
-	FILE* fp = fopen(tmp, "wb");
+	char tmp[128] = { NULL }; //
+	strftime(tmp, sizeof(tmp), "outputImages/%Y-%m-%d-%H-%M_spp", localtime(&t));
+	std::string st(tmp);
+	st += std::to_string(SPP) + "_.ppm";
+	FILE* fp = fopen(st.c_str(), "wb");
 	(void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
 	for (auto i = 0; i < scene.height * scene.width; ++i) {
 		static unsigned char color[3];
@@ -70,11 +73,11 @@ void Renderer::TheadRender(int beginRow, int endRow) {
 				float x = (2 * (i + get_random_float()) / (float)pScene->width - 1) *
 					imageAspectRatio * scale;
 				float y = (1 - 2 * (j + get_random_float()) / (float)pScene->height) * scale;
-				Vector3f dir = normalize(Vector3f(x, y, 1)
-				);
+				Vector3f dir = normalize(Vector3f(x, y, 1));
 
 				//framebuffer[m] += pScene->castRayDir_InDir(Ray(eye_pos, dir), 0, false) / SPP;
 				framebuffer[m] += pScene->castRay(Ray(eye_pos, dir), 0, false) / SPP;
+				//framebuffer[m] += pScene->castRay2(Ray(eye_pos, dir), 0, false) / SPP;
 			}
 			m++;
 		}
