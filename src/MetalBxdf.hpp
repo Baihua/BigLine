@@ -16,7 +16,7 @@ public:
 		else
 		{
 			Vector3f h = normalize(wi + wo);
-			return md->PDF(h,N) / (4 * dotProduct(wo, wi));
+			return md->PDF(h,N) / (4 * dotProduct(wo, h));
 		}
 	}
 	virtual inline Vector3f F(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) {

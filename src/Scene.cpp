@@ -71,10 +71,10 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 
 	Vector3f L;
 
-	//if (bxdf->hasEmission() && (depth == 0 || isPerfectSpecular))
-	if (bxdf->hasEmission())
+	
+	if (hitObjInter.obj->IsLight())
 	{
-		return bxdf->getEmission();
+		return hitObjInter.obj->light->GetLe();
 	}
 	int numLight = lights.size();
 	Vector3f wo = -ray.direction;
@@ -103,6 +103,8 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				float scatteringpdf = bxdf->pdf(wi, wo, n);
 				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
 				L = l * f * dotProduct(wi, n) * weight / pdf;
+				//if (weight < 0.99)
+				//	printf("\n%f, %f\n", scatteringpdf, weight);
 			}
 		}
 		else
@@ -115,7 +117,6 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f S = Vector3f(0);
 	if (bxdf->IsDelat() || get_random_float() < RussianRoulette)//test rrp
 	{
-
 		float weight = 1, rr = RussianRoulette;
 		Vector3f wi;
 		Vector3f f = bxdf->Sample_f(wo, wi, n, pdf);
@@ -134,12 +135,15 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				}
 				weight = PowerHeuistic(1, pdf, 1, lightPdf);
 				rr = RussianRoulette;
+				//if (weight < 0.99)
+				//	printf("\n%f\n", weight);
 			}
 			else
 			{
 				weight = 1; rr = 1;
 			}
 			Vector3f  matF = castRay(r, depth + 1, bxdf->IsDelat()) * f * std::fabs(dotProduct(wi, n)) / pdf / rr;
+
 			S = matF * weight;
 		}
 	}
@@ -185,7 +189,7 @@ Vector3f Scene::castRayDir_InDir(const Ray& ray, int depth, bool isPerfectSpecul
 		float d2 = std::max(0.0f, dotProduct(nn, -ws));
 		L_dir = emit * bxdf->F(ws, wo, n) * d1 * d2 / (distance * distance) / lightPdf;
 	}
-	
+
 	Vector3f L_indir;
 	float bxdfPdf = 0;
 	bool rrTest = false;

@@ -131,19 +131,19 @@ int main(int argc, char** argv)
 	sl.objects["small"]->SetMaterial(lightGreen);
 	DiffuseLight* light1 = new DiffuseLight();
 	light1->obj = sl.objects["small"];
-	light1->color = (500 * Vector3f(0, 1, 0));
+	light1->color = (500 * Vector3f(1, 1, 1));
 	sl.objects["small"]->light = light1;
 
 	sl.objects["middle"]->SetMaterial(lightYellow);
 	DiffuseLight* light2 = new DiffuseLight();
 	light2->obj = sl.objects["middle"];
-	light2->color = (200.0f * Vector3f(0.0f, 0, 1.0));
+	light2->color = (200.0f * Vector3f(1.0f, 1, 1.0));
 	sl.objects["middle"]->light = light2;
 
 	sl.objects["big"]->SetMaterial(lightRed);
 	DiffuseLight* light3 = new DiffuseLight();
 	light3->obj = sl.objects["big"];
-	light3->color = 20.0f * Vector3f(1, 0, 0);
+	light3->color = 20.0f * Vector3f(1, 1, 1);
 	sl.objects["big"]->light = light3;
 
 	//sl.Load("./scene/mis2.xml");
@@ -268,7 +268,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(128, 4);//设置SPP与线程数
+	r.SetSomeSetting(64, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

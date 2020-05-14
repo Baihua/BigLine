@@ -13,7 +13,8 @@ class Light
 public:
 	virtual inline Vector3f Sample_Li(const Vector3f& p, Vector3f& wi, float& dist, float& pdf)const = 0;
 	virtual inline float Pdf(const Vector3f& p, const Vector3f& wi) const = 0;
-	virtual bool IsDelta() const { return false; };
+	virtual bool IsDelta() const { return false; }
+	virtual inline Vector3f GetLe()const { return Vector3f(0); }
 };
 
 class DiffuseLight :public Light
@@ -24,6 +25,8 @@ public:
 	virtual inline Vector3f Sample_Li(const Vector3f& p, Vector3f& wi, float& dist, float& pdf)const;
 
 	virtual inline float Pdf(const Vector3f& p, const Vector3f& wi) const;
+	virtual inline Vector3f GetLe()const { return color; }
+
 public:
 
 	Vector3f color;
@@ -58,13 +61,13 @@ Vector3f DiffuseLight::Sample_Li(const Vector3f& p, Vector3f& wi, float& dist, f
 
 float DiffuseLight::Pdf(const Vector3f& p, const Vector3f& wi) const {
 	Ray r(p, wi);
-	Intersection inter = obj->getIntersection(Ray(p, wi));
+	Intersection inter = obj->getIntersection(r);
 	if (!inter.happened)
 	{
 		return 0;
 	}
 	const auto w = normalize(p - inter.coords);
-	float dist2 = r.t * r.t;
+	float dist2 = inter.distance*inter.distance;
 	float cosTheta = dotProduct(w, inter.normal);
 	if (cosTheta <= 0)
 		return 0;
