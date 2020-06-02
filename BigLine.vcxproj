@@ -164,6 +164,7 @@
     <ClInclude Include="src\OBJ_Loader.hpp" />
     <ClInclude Include="src\Ray.hpp" />
     <ClInclude Include="src\Renderer.hpp" />
+    <ClInclude Include="src\Sampler.hpp" />
     <ClInclude Include="src\Scene.hpp" />
     <ClInclude Include="src\SceneDataLoad.hpp" />
     <ClInclude Include="src\Sphere.hpp" />

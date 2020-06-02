@@ -27,6 +27,7 @@ void Renderer::Render(const Scene& scene)
 	int startR = 0;
 	int endR = 0;
 	std::cout << "SPP: " << SPP << "\n";
+	sampler = std::unique_ptr<Sampler>(new RandomSampler(SPP));
 	for (int i = 0; i < threadNum; i++) {
 		startR = i * numPerThre;
 
@@ -34,7 +35,8 @@ void Renderer::Render(const Scene& scene)
 			endR = scene.height;
 		else
 			endR = (i + 1) * numPerThre;
-		std::shared_ptr<std::thread>  t = std::make_shared<std::thread>(&Renderer::TheadRender, this, startR, endR);
+		std::shared_ptr<std::thread>  t = std::make_shared<std::thread>(&Renderer::TheadRender, this, startR, endR, sampler->Clone()
+			);
 		threads.push_back(t);
 	}
 	for (std::shared_ptr<std::thread> t : threads) {
@@ -58,7 +60,7 @@ void Renderer::Render(const Scene& scene)
 	}
 	fclose(fp);
 }
-void Renderer::TheadRender(int beginRow, int endRow) {
+void Renderer::TheadRender(int beginRow, int endRow,std::unique_ptr<Sampler> spr) {
 
 	float scale = tan(deg2rad(pScene->fov * 0.5));
 	float imageAspectRatio = pScene->width / (float)pScene->height;
@@ -68,11 +70,12 @@ void Renderer::TheadRender(int beginRow, int endRow) {
 		for (uint32_t i = 0; i < pScene->width; ++i) {
 			// generate primary ray direction
 
+			spr->StartPixel();
 			for (int k = 0; k < SPP; k++) {
-
-				float x = (2 * (i + get_random_float()) / (float)pScene->width - 1) *
+				Vector2f d2 = spr->Get2D();
+				float x = (2 * (i + d2.x) / (float)pScene->width - 1) *
 					imageAspectRatio * scale;
-				float y = (1 - 2 * (j + get_random_float()) / (float)pScene->height) * scale;
+				float y = (1 - 2 * (j + d2.y) / (float)pScene->height) * scale;
 				Vector3f dir = normalize(Vector3f(x, y, 1));
 
 				//framebuffer[m] += pScene->castRayDir_InDir(Ray(eye_pos, dir), 0, false) / SPP;

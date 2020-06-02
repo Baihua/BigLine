@@ -78,6 +78,9 @@
     <ClInclude Include="src\MicrofacetDistribution.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Sampler.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BVH.cpp">
