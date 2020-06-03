@@ -39,7 +39,7 @@ Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f
 	float kr = 1;
 	if (!refract(-wo, N, wi, ior)) {
 		wi = reflect(-wo, N);
-		pdf = 1; //printf("-ffff\n");
+		pdf = 1; 
 		return reflectance / fabs(dotProduct(N, wi));
 	}
 	else
@@ -50,7 +50,6 @@ Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f
 			//Ñ¡ÓÃ·´Éä£»
 			wi = reflect(-wo, N);
 			pdf = kr;
-			//printf("-ffff\n");
 			return kr * reflectance / fabs(dotProduct(N, wi));
 
 		}
@@ -59,9 +58,6 @@ Vector3f MateialGlass::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f
 			pdf = 1 - kr;
 			bool enter = dotProduct(wo, N) > 0;
 			float v = enter ?  1 / (ior * ior): ior * ior ;
-			/*if (!enter) {
-				
-			}*/
 			return v * (1 - kr) * reflectance / fabs(dotProduct(N, wi));
 		}
 

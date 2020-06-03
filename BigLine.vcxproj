@@ -167,6 +167,7 @@
     <ClInclude Include="src\Sampler.hpp" />
     <ClInclude Include="src\Scene.hpp" />
     <ClInclude Include="src\SceneDataLoad.hpp" />
+    <ClInclude Include="src\Sobolmatrices.hpp" />
     <ClInclude Include="src\Sphere.hpp" />
     <ClInclude Include="src\Triangle.hpp" />
     <ClInclude Include="src\Vector.hpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Sobolmatrices.cpp" />
     <ClCompile Include="src\Vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

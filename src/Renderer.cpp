@@ -27,7 +27,7 @@ void Renderer::Render(const Scene& scene)
 	int startR = 0;
 	int endR = 0;
 	std::cout << "SPP: " << SPP << "\n";
-	sampler = std::unique_ptr<Sampler>(new RandomSampler(SPP));
+	sampler = std::unique_ptr<Sampler>(new SobolSampler(SPP));
 	for (int i = 0; i < threadNum; i++) {
 		startR = i * numPerThre;
 
@@ -51,6 +51,8 @@ void Renderer::Render(const Scene& scene)
 	st += std::to_string(SPP) + "_.ppm";
 	FILE* fp = fopen(st.c_str(), "wb");
 	(void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
+
+
 	for (auto i = 0; i < scene.height * scene.width; ++i) {
 		static unsigned char color[3];
 		color[0] = (unsigned char)(255 * std::pow(clamp(0, 1, framebuffer[i].x), 0.6f));
@@ -60,6 +62,7 @@ void Renderer::Render(const Scene& scene)
 	}
 	fclose(fp);
 }
+
 void Renderer::TheadRender(int beginRow, int endRow,std::unique_ptr<Sampler> spr) {
 
 	float scale = tan(deg2rad(pScene->fov * 0.5));
@@ -77,10 +80,8 @@ void Renderer::TheadRender(int beginRow, int endRow,std::unique_ptr<Sampler> spr
 					imageAspectRatio * scale;
 				float y = (1 - 2 * (j + d2.y) / (float)pScene->height) * scale;
 				Vector3f dir = normalize(Vector3f(x, y, 1));
-
-				//framebuffer[m] += pScene->castRayDir_InDir(Ray(eye_pos, dir), 0, false) / SPP;
 				framebuffer[m] += pScene->castRay(Ray(eye_pos, dir), 0, false) / SPP;
-				//framebuffer[m] += pScene->castRay2(Ray(eye_pos, dir), 0, false) / SPP;
+				spr->NextSample();
 			}
 			m++;
 		}

@@ -81,6 +81,9 @@
     <ClInclude Include="src\Sampler.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Sobolmatrices.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BVH.cpp">
@@ -96,6 +99,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Vector.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sobolmatrices.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

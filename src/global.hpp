@@ -3,7 +3,7 @@
 #include <cmath>
 #include <random>
 #include<mutex>
-
+#include "Sobolmatrices.hpp"
 #undef M_PI
 #define M_PI 3.141592653589793f
 
@@ -99,3 +99,10 @@ inline float Sin2Theta(const Vector3f& w, const Vector3f& n) { return 1.f - Cos2
 inline float SinTheta(const Vector3f& w, const Vector3f& n) { return std::sqrt(Sin2Theta(w,n)); }
 inline float TanTheta(const Vector3f& w, const Vector3f& n) { return SinTheta(w,n) / CosTheta(w,n); }
 inline float Tan2Theta(const Vector3f& w, const Vector3f& n) { return 1 / Cos2Theta(w,n) - 1; }
+
+inline float SobolSample(int a, int dimension) {
+	uint32_t v = 0;
+	for (int i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
+		if (a & 1) v ^= SobolMatrices32[i];
+	return v * 2.3283064365386963e-10f;/* 1/2^32 */
+}
