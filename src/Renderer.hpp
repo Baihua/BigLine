@@ -22,6 +22,8 @@ public:
 	void SetSomeSetting(int spp, int threadNum) {
 		SPP = spp; this->threadNum = threadNum;
 	}
+
+	void ToneMapping();
 private:
 	std::mutex mutex;
 	std::vector<Vector3f> framebuffer;

@@ -33,9 +33,14 @@ public:
 	Vector3f operator + (const Vector3f& v) const { return Vector3f(x + v.x, y + v.y, z + v.z); }
 	Vector3f operator - () const { return Vector3f(-x, -y, -z); }
 	Vector3f& operator += (const Vector3f& v) { x += v.x, y += v.y, z += v.z; return *this; }
+	Vector3f& operator *= (const float& v) { x *= v, y *= v, z *= v; return *this; }
 	friend Vector3f operator * (const float& r, const Vector3f& v)
 	{
 		return Vector3f(v.x * r, v.y * r, v.z * r);
+	}
+	friend Vector3f operator / (const Vector3f v1 , const Vector3f& v2)
+	{
+		return Vector3f(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
 	}
 	friend std::ostream& operator << (std::ostream& os, const Vector3f& v)
 	{

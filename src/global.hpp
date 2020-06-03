@@ -106,3 +106,20 @@ inline float SobolSample(int a, int dimension) {
 		if (a & 1) v ^= SobolMatrices32[i];
 	return v * 2.3283064365386963e-10f;/* 1/2^32 */
 }
+
+inline Vector3f ACESToneMapping(Vector3f color, float adapted_lum)
+{
+	const float A = 2.51f;
+	const float B = 0.03f;
+	const float C = 2.43f;
+	const float D = 0.59f;
+	const float E = 0.14f;
+
+	color *= adapted_lum;
+	return (color * (A * color + B)) / (color * (C * color + D) + E);
+}
+
+inline float luminance(Vector3f v)
+{
+	return v.x*0.2126f+v.y*0.7152f, v.z*0.0722f;
+}
