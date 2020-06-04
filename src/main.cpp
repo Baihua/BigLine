@@ -132,19 +132,19 @@ int main(int argc, char** argv)
 	DiffuseLight* light1 = new DiffuseLight();
 	light1->obj = sl.objects["small"];
 	light1->color = (500 * Vector3f(1, 1, 1));
-	sl.objects["small"]->light = light1;
+	sl.objects["small"]->SetLight(light1);
 
 	sl.objects["middle"]->SetMaterial(lightYellow);
 	DiffuseLight* light2 = new DiffuseLight();
 	light2->obj = sl.objects["middle"];
 	light2->color = (200.0f * Vector3f(1.0f, 1, 1.0));
-	sl.objects["middle"]->light = light2;
+	sl.objects["middle"]->SetLight(light2);
 
 	sl.objects["big"]->SetMaterial(lightRed);
 	DiffuseLight* light3 = new DiffuseLight();
 	light3->obj = sl.objects["big"];
 	light3->color = 20.0f * Vector3f(1, 1, 1);
-	sl.objects["big"]->light = light3;
+	sl.objects["big"]->SetLight(light3);
 
 	//sl.Load("./scene/mis2.xml");
 	//sl.objects["floor"]->SetMaterial(red);
@@ -167,7 +167,8 @@ int main(int argc, char** argv)
 	//DiffuseLight* ll = new DiffuseLight();
 	//ll->obj = sl.objects["light"];
 	//ll->color = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
-	//sl.objects["light"]->light = ll;
+	//
+	//sl.objects["light"]->SetLight(ll);
 	//sl.objects["tallBox"]->SetMaterial(white);
 	//sl.objects["shortBox"]->SetMaterial(white);
 

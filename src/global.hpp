@@ -121,5 +121,5 @@ inline Vector3f ACESToneMapping(Vector3f color, float adapted_lum)
 
 inline float luminance(Vector3f v)
 {
-	return v.x*0.2126f+v.y*0.7152f, v.z*0.0722f;
+	return v.x*0.2126f+v.y*0.7152f+ v.z*0.0722f;
 }

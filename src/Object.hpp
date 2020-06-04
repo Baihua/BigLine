@@ -29,7 +29,13 @@ public:
 	virtual void Sample(Intersection& pos, float& pdf) = 0;
 	virtual bool hasEmit() = 0;
 	virtual void SetMaterial(Material* mat) = 0;
+	virtual void SetLight(Light* light) { this->light = light; };
 	virtual bool IsLight() { return  light != NULL; }
+	virtual std::vector<Light*> GetLight() {
+		if (IsLight()) return { light };
+		else return {};
+	}
+	std::string name;
 	Light* light = NULL;
 };
 

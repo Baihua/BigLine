@@ -30,11 +30,15 @@ public:
 	void Add(Object* object) {
 		objects.push_back(object);
 		if (object->IsLight()) {
-			AddLight(object->light);
+			AddLight(object);
 		}
 	}
 
-	void AddLight(Light* light) { lights.push_back(light); }
+	void AddLight(Object* obj) {
+
+		std::vector<Light*> l = obj->GetLight();
+		lights.insert(lights.end(), l.begin(), l.end());
+	}
 
 	const std::vector<Object*>& get_objects() const { return objects; }
 	const std::vector<Light* >& get_lights() const { return lights; }

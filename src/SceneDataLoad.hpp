@@ -55,6 +55,7 @@ void SceneDataLoad::Load(const char* file) {
 			}
 
 			MeshTriangle* m = new MeshTriangle(indices, points);
+			m->name = name;
 			objects[name] = m;
 		}
 		else if (std::strcmp(type, "sphere") == 0) {
@@ -64,6 +65,7 @@ void SceneDataLoad::Load(const char* file) {
 			strToV3(objNode->first_attribute("point")->value(),p);
 			Sphere* sphere = new Sphere(p,r);
 			objects[name] = sphere;
+			sphere->name = name;
 		}
 
 	}

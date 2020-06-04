@@ -70,9 +70,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	if (bxdf == NULL) return Vector3f();
 
 	Vector3f L;
-
-	
-	if (hitObjInter.obj->IsLight())
+	if (bxdf->hasEmission() ||hitObjInter.obj->IsLight())
 	{
 		return hitObjInter.obj->light->GetLe();
 	}
@@ -87,6 +85,8 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Light* selectLight = lights[randOneLight];
 	Vector3f wi;
 	Vector3f l = selectLight->Sample_Li(p, wi, dis, pdf);
+	if (l.hasNegative())
+		printf("\n-----sample_Li-----negative\n");
 	pdf *= 1.0f / numLight;
 	if (l.isAllZero() || pdf <= 0) { L = Vector3f(0); }
 	else {
@@ -102,9 +102,10 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			{
 				float scatteringpdf = bxdf->pdf(wi, wo, n);
 				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
-				L = l * f * dotProduct(wi, n) * weight / pdf;
-				//if (weight < 0.99)
-				//	printf("\n%f, %f\n", scatteringpdf, weight);
+				L = l * f * std::clamp(dotProduct(wi, n),0.f,1.f) * weight / pdf;
+
+				if (L.hasNegative())
+					printf("\n----------negative\n");
 			}
 		}
 		else
@@ -112,6 +113,8 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			L = Vector3f(0);
 		}
 	}
+	if (L.hasNegative())
+		printf("\n----------negative\n");
 
 	//bxdf 采样
 	Vector3f S = Vector3f(0);
@@ -145,6 +148,10 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 			Vector3f  matF = castRay(r, depth + 1, bxdf->IsDelat()) * f * std::fabs(dotProduct(wi, n)) / pdf / rr;
 
 			S = matF * weight;
+			if (S.hasNegative())
+			{
+				printf("\n----------negative\n");
+			}
 		}
 	}
 	return L + S;

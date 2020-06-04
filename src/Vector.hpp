@@ -28,6 +28,10 @@ public:
 		return fabsf(x) < 0.0001 && fabs(y) < 0.0001 && fabs(z) < 0.0001;
 	}
 
+	bool hasNegative() {
+		return x < 0 || y < 0 || z < 0;
+	}
+
 	Vector3f operator * (const Vector3f& v) const { return Vector3f(x * v.x, y * v.y, z * v.z); }
 	Vector3f operator - (const Vector3f& v) const { return Vector3f(x - v.x, y - v.y, z - v.z); }
 	Vector3f operator + (const Vector3f& v) const { return Vector3f(x + v.x, y + v.y, z + v.z); }
@@ -38,7 +42,7 @@ public:
 	{
 		return Vector3f(v.x * r, v.y * r, v.z * r);
 	}
-	friend Vector3f operator / (const Vector3f v1 , const Vector3f& v2)
+	friend Vector3f operator / (const Vector3f v1, const Vector3f& v2)
 	{
 		return Vector3f(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
 	}

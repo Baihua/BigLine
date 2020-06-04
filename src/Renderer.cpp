@@ -53,7 +53,7 @@ void Renderer::Render(const Scene& scene)
 	(void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
 
 	ToneMapping();
-	 
+
 	for (auto i = 0; i < scene.height * scene.width; ++i) {
 		static unsigned char color[3];
 		color[0] = (unsigned char)(255 * std::pow(clamp(0, 1, framebuffer[i].x), 0.6f));
@@ -70,20 +70,20 @@ void Renderer::ToneMapping()
 	float inv = 1.0f / framebuffer.size();
 	for (auto v : framebuffer) {
 		float l = luminance(v);
-		avgl += inv *std::exp(std::log10(0.00001 + l));	
+		avgl += inv * std::exp(std::log10(0.00001 + l));
 	}
-	printf("\n\navgl%f\n",avgl);
-
+	printf("\ntoneMapping avgl: %f\n",avgl);
+	float exposure = 0.5f / avgl;
 	for (auto& v : framebuffer) {
-		v = ACESToneMapping(v, avgl);
+		v = ACESToneMapping(v, exposure);
 	}
 }
 
-void Renderer::TheadRender(int beginRow, int endRow,std::unique_ptr<Sampler> spr) {
+void Renderer::TheadRender(int beginRow, int endRow, std::unique_ptr<Sampler> spr) {
 
 	float scale = tan(deg2rad(pScene->fov * 0.5));
 	float imageAspectRatio = pScene->width / (float)pScene->height;
-	Vector3f eye_pos =  pScene->eyePos;// (278, 273, -800);
+	Vector3f eye_pos = pScene->eyePos;// (278, 273, -800);
 	int m = beginRow * pScene->width;
 	for (uint32_t j = beginRow; j < endRow; ++j) {
 		for (uint32_t i = 0; i < pScene->width; ++i) {
