@@ -72,10 +72,10 @@ void Renderer::ToneMapping()
 		float l = luminance(v);
 		avgl += inv * std::exp(std::log10(0.00001 + l));
 	}
-	printf("\ntoneMapping avgl: %f\n",avgl);
 	float exposure = 0.5f / avgl;
+	printf("\ntoneMapping lum: %f exp: %f\n",avgl,exposure);
 	for (auto& v : framebuffer) {
-		v = ACESToneMapping(v, exposure);
+		v = ACESToneMapping(v*exposure);
 	}
 }
 
