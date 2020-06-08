@@ -12,8 +12,8 @@ public:
 };
 
 float DiffuseBxdf::pdf(const Vector3f& wi, const Vector3f& wo, const Vector3f& N) {
-	if (dotProduct(wo, N) > 0.0f)
-		return 0.5f / M_PI;
+	if (dotProduct(wi, N) > 0.0f)
+		return dotProduct(wi,N)/M_PI;// 0.5f / M_PI;
 	else
 		return 0.0f;
 }
@@ -34,8 +34,8 @@ Vector3f DiffuseBxdf::Sample_f(const Vector3f& wo, Vector3f& wi, const Vector3f&
 		wi = Vector3f(0);
 		return Vector3f(0);
 	}
-	wi = SampleOnHemisphere(N);
-	pdf = 0.5f / M_PI;
+	wi = CosineSampleHemisphere(N);// SampleOnHemisphere(N);
+	pdf = dotProduct(N, wi) / M_PI;// 0.5f / M_PI;
 	return Kd / M_PI;
 }
 #endif // !_DIFFUSEBXDF_H__

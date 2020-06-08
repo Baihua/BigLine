@@ -52,7 +52,7 @@ void Renderer::Render(const Scene& scene)
 	FILE* fp = fopen(st.c_str(), "wb");
 	(void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
 
-	ToneMapping();
+	//ToneMapping();
 
 	for (auto i = 0; i < scene.height * scene.width; ++i) {
 		static unsigned char color[3];

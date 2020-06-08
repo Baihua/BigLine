@@ -119,32 +119,32 @@ int main(int argc, char** argv)
 	mf4->SetRoughness(0.4);
 	metal4->bxdf = mf4;
 
-	sl.Load("./scene/mis.xml");
-	sl.objects["floor"]->SetMaterial(white);
-	sl.objects["back"]->SetMaterial(white);
+	//sl.Load("./scene/mis.xml");
+	//sl.objects["floor"]->SetMaterial(white);
+	//sl.objects["back"]->SetMaterial(white);
 
-	sl.objects["p1"]->SetMaterial(metal1);
-	sl.objects["p2"]->SetMaterial(metal2);
-	sl.objects["p3"]->SetMaterial(metal3);
-	sl.objects["p4"]->SetMaterial(metal4);
+	//sl.objects["p1"]->SetMaterial(metal1);
+	//sl.objects["p2"]->SetMaterial(metal2);
+	//sl.objects["p3"]->SetMaterial(metal3);
+	//sl.objects["p4"]->SetMaterial(metal4);
 
-	sl.objects["small"]->SetMaterial(lightGreen);
-	DiffuseLight* light1 = new DiffuseLight();
-	light1->obj = sl.objects["small"];
-	light1->color = (500 * Vector3f(1, 1, 1));
-	sl.objects["small"]->SetLight(light1);
+	//sl.objects["small"]->SetMaterial(lightGreen);
+	//DiffuseLight* light1 = new DiffuseLight();
+	//light1->obj = sl.objects["small"];
+	//light1->color = (500 * Vector3f(1, 1, 1));
+	//sl.objects["small"]->SetLight(light1);
 
-	sl.objects["middle"]->SetMaterial(lightYellow);
-	DiffuseLight* light2 = new DiffuseLight();
-	light2->obj = sl.objects["middle"];
-	light2->color = (200.0f * Vector3f(1.0f, 1, 1.0));
-	sl.objects["middle"]->SetLight(light2);
+	//sl.objects["middle"]->SetMaterial(lightYellow);
+	//DiffuseLight* light2 = new DiffuseLight();
+	//light2->obj = sl.objects["middle"];
+	//light2->color = (200.0f * Vector3f(1.0f, 1, 1.0));
+	//sl.objects["middle"]->SetLight(light2);
 
-	sl.objects["big"]->SetMaterial(lightRed);
-	DiffuseLight* light3 = new DiffuseLight();
-	light3->obj = sl.objects["big"];
-	light3->color = 20.0f * Vector3f(1, 1, 1);
-	sl.objects["big"]->SetLight(light3);
+	//sl.objects["big"]->SetMaterial(lightRed);
+	//DiffuseLight* light3 = new DiffuseLight();
+	//light3->obj = sl.objects["big"];
+	//light3->color = 20.0f * Vector3f(1, 1, 1);
+	//sl.objects["big"]->SetLight(light3);
 
 	//sl.Load("./scene/mis2.xml");
 	//sl.objects["floor"]->SetMaterial(red);
@@ -156,21 +156,21 @@ int main(int argc, char** argv)
 	//sl.objects["mr"]->SetMaterial(metal1);
 	//sl.objects["df"]->SetMaterial(green)/**/;
 
-	//sl.Load("./scene/cornell.xml");
+	sl.Load("./scene/cornell.xml");
 
-	//sl.objects["floor"]->SetMaterial(white);
-	//sl.objects["ceiling"]->SetMaterial(white);
-	//sl.objects["back"]->SetMaterial(white);
-	//sl.objects["left"]->SetMaterial(red);
-	//sl.objects["right"]->SetMaterial(green);
-	//sl.objects["light"]->SetMaterial(light);
-	//DiffuseLight* ll = new DiffuseLight();
-	//ll->obj = sl.objects["light"];
-	//ll->color = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
-	//
-	//sl.objects["light"]->SetLight(ll);
-	//sl.objects["tallBox"]->SetMaterial(white);
-	//sl.objects["shortBox"]->SetMaterial(white);
+	sl.objects["floor"]->SetMaterial(white);
+	sl.objects["ceiling"]->SetMaterial(white);
+	sl.objects["back"]->SetMaterial(white);
+	sl.objects["left"]->SetMaterial(red);
+	sl.objects["right"]->SetMaterial(green);
+	sl.objects["light"]->SetMaterial(light);
+	DiffuseLight* ll = new DiffuseLight();
+	ll->obj = sl.objects["light"];
+	ll->color = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
+	
+	sl.objects["light"]->SetLight(ll);
+	sl.objects["tallBox"]->SetMaterial(white);
+	sl.objects["shortBox"]->SetMaterial(white);
 
 
 	for (auto item : sl.objects) {
@@ -269,7 +269,7 @@ int main(int argc, char** argv)
 	Renderer r;
 
 	auto start = std::chrono::system_clock::now();
-	r.SetSomeSetting(64, 4);//设置SPP与线程数
+	r.SetSomeSetting(128, 4);//设置SPP与线程数
 	r.Render(scene);
 	auto stop = std::chrono::system_clock::now();
 

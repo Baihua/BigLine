@@ -76,7 +76,13 @@ public:
 	Vector2f(float xx) : x(xx), y(xx) {}
 	Vector2f(float xx, float yy) : x(xx), y(yy) {}
 	Vector2f operator * (const float& r) const { return Vector2f(x * r, y * r); }
+	Vector2f& operator *= (const float& v) { x *= v, y *= v; return *this; }
+	friend Vector2f operator * (const float& r, const Vector2f& v)
+	{
+		return Vector2f(v.x * r, v.y * r);
+	}
 	Vector2f operator + (const Vector2f& v) const { return Vector2f(x + v.x, y + v.y); }
+	Vector2f operator - (const Vector2f& v) const { return Vector2f(x - v.x, y - v.y); }
 	float x, y;
 };
 

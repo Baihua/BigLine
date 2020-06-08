@@ -138,8 +138,6 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				}
 				weight = PowerHeuistic(1, pdf, 1, lightPdf);
 				rr = RussianRoulette;
-				//if (weight < 0.99)
-				//	printf("\n%f\n", weight);
 			}
 			else
 			{
