@@ -68,7 +68,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 
 	BxDF* bxdf = hitObjInter.m->bxdf;
 	if (bxdf == NULL) return Vector3f();
-
+	if (depth > 1) return Vector3f(0);
 	Vector3f L;
 	if (hitObjInter.obj->IsLight())
 	{
@@ -107,7 +107,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				float scatteringpdf = bxdf->pdf(wi, wo, n);
 				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
 				L = l * f * std::clamp(dotProduct(wi, n), 0.f, 1.f) * weight / pdf;
-				printf("\nL:(%f,%f,%f), w:%f, pdf:%f, lpdf:%f\n", l.x, l.y, l.z, weight, pdf, scatteringpdf);
+				//printf("\nL:(%f,%f,%f), w:%f, pdf:%f, lpdf:%f\n", l.x, l.y, l.z, weight, pdf, scatteringpdf);
 			}
 		}
 		else
@@ -147,8 +147,9 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				}
 				weight = PowerHeuistic(1, pdf, 1, lightPdf);
 				S = S * f * weight * std::clamp(dotProduct(wi, n), 0.f, 1.f) / pdf;
-				printf("\nS:(%f,%f,%f), w:%f, pdf:%f, lpdf:%f\n", S.x, S.y, S.z, weight, pdf, lightPdf);
-				L += S;
+				if (depth == 1 && weight > 0.5f)
+					printf("\nS:(%f,%f,%f), w:%f, pdf:%f, lpdf:%f\n", S.x, S.y, S.z, weight, pdf, lightPdf);
+				//L += S;
 			}
 		}
 	}
@@ -156,7 +157,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 	Vector3f P;
 	if (bxdf->IsDelat() || depth < 3 || get_random_float() < RussianRoulette)//test rrp 生成新的path
 	{
-		float weight = 1, rr = RussianRoulette;
+		float  rr = RussianRoulette;
 		Vector3f wi;
 		Vector3f f = bxdf->Sample_f(wo, wi, n, pdf);
 		if (f.isAllZero() || pdf <= 0) {
@@ -172,10 +173,15 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				rr = 1;
 			}
 			Vector3f  matF = castRay(r, depth + 1, bxdf->IsDelat()) * f * std::fabs(dotProduct(wi, n)) / pdf / rr;
+			//if (!matF.isAllZero())
+				//printf("\nF:(%f,%f,%f),pdf:%f\n", matF.x, matF.y, matF.z, pdf);
+
 			P = matF;
 		}
 	}
-	return L + P;
+	if (depth == 1)
+		return L + P;
+	return P;
 }
 
 // 直接光照与间接光照分开

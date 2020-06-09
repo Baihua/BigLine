@@ -147,14 +147,14 @@ int main(int argc, char** argv)
 	//sl.objects["big"]->SetLight(light3);
 
 	sl.Load("./scene/mis2.xml");
-	sl.objects["floor"]->SetMaterial(metal1);
+	sl.objects["floor"]->SetMaterial(red);
 	sl.objects["middle"]->SetMaterial(light);
 	DiffuseLight* ll = new DiffuseLight();
 	ll->obj = sl.objects["middle"];
 	ll->color = (8.0f * Vector3f(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3f(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3f(0.737f + 0.642f, 0.737f + 0.159f, 0.737f));
 	sl.objects["middle"]->light = ll;
 	sl.objects["mr"]->SetMaterial(metal1);
-	sl.objects["df"]->SetMaterial(metal1)/**/;
+	sl.objects["df"]->SetMaterial(green)/**/;
 
 	//sl.Load("./scene/cornell.xml");
 
