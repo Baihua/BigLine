@@ -15,6 +15,7 @@ public:
 	virtual inline float Pdf(const Vector3f& p, const Vector3f& wi) const = 0;
 	virtual bool IsDelta() const { return false; }
 	virtual inline Vector3f GetLe()const { return Vector3f(0); }
+	virtual inline Vector3f GetLi(const Intersection& intersect, const Vector3f& wi)const { return Vector3f(0); }
 };
 
 class DiffuseLight :public Light
@@ -26,6 +27,11 @@ public:
 
 	virtual inline float Pdf(const Vector3f& p, const Vector3f& wi) const;
 	virtual inline Vector3f GetLe()const { return color; }
+	virtual inline Vector3f GetLi(const Intersection& intersect, const Vector3f& wi)const { 
+		if (dotProduct(intersect.normal, -wi) > 0)
+			return color;
+		return Vector3f(0); 
+	}
 
 public:
 
