@@ -58,19 +58,23 @@ public:
 			return 0.f;
 
 		const auto tan2Theta = Tan2Theta(wh, n);
-		if (std::isnan(tan2Theta))
-			return 0;
-
+		if (std::isinf(tan2Theta))
+			return 0.;
+		//if (std::isnan(tan2Theta))
+		//	return 0.;
+		float cosTheta = dotProduct(wh, n);
+		float theta = acos(cosTheta);
 		const auto cos4Theta = Cos2Theta(wh, n) * Cos2Theta(wh, n);
 		const auto alpha2 = alpha * alpha;
-		return exp(-tan2Theta / alpha2) / (M_PI * alpha2 * cos4Theta);
+		//float k = -tan2Theta / alpha2;
+		float ret = exp(-tan2Theta / alpha2) / (M_PI * alpha2 * cos4Theta);
+		return ret;
 	}
 
 	virtual float Lambda(const Vector3f& w, const Vector3f& n) const {
 		auto absTanTheta = std::abs(TanTheta(w, n));
-		if (std::isnan(absTanTheta))
-			return 98e8f;
-
+		if (std::isinf(absTanTheta))
+			return 0.f;
 		auto a = 1 / (alpha * absTanTheta);
 		if (a >= 1.6f)
 			return 0;

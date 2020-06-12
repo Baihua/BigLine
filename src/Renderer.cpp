@@ -27,7 +27,8 @@ void Renderer::Render(const Scene& scene)
 	int startR = 0;
 	int endR = 0;
 	std::cout << "SPP: " << SPP << "\n";
-	sampler = std::unique_ptr<Sampler>(new SobolSampler(SPP));
+	//sampler = std::unique_ptr<Sampler>(new SobolSampler(SPP));
+	sampler = std::unique_ptr<Sampler>(new RandomSampler(SPP));
 	for (int i = 0; i < threadNum; i++) {
 		startR = i * numPerThre;
 

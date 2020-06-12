@@ -53,8 +53,6 @@ bool Scene::trace(
 			index = indexK;
 		}
 	}
-
-
 	return (*hitObject != nullptr);
 }
 
@@ -68,7 +66,6 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 
 	BxDF* bxdf = hitObjInter.m->bxdf;
 	if (bxdf == NULL) return Vector3f();
-	if (depth > 1) return Vector3f(0);
 	Vector3f L;
 	if (hitObjInter.obj->IsLight())
 	{
@@ -107,7 +104,6 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				float scatteringpdf = bxdf->pdf(wi, wo, n);
 				float weight = PowerHeuistic(1, pdf, 1, scatteringpdf);
 				L = l * f * std::clamp(dotProduct(wi, n), 0.f, 1.f) * weight / pdf;
-				//printf("\nL:(%f,%f,%f), w:%f, pdf:%f, lpdf:%f\n", l.x, l.y, l.z, weight, pdf, scatteringpdf);
 			}
 		}
 		else
@@ -146,10 +142,9 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 						lightPdf += l->Pdf(o, wi) * scale;
 				}
 				weight = PowerHeuistic(1, pdf, 1, lightPdf);
-				S = S * f * weight * std::clamp(dotProduct(wi, n), 0.f, 1.f) / pdf;
-				if (depth == 1 && weight > 0.5f)
-					printf("\nS:(%f,%f,%f), w:%f, pdf:%f, lpdf:%f\n", S.x, S.y, S.z, weight, pdf, lightPdf);
-				//L += S;
+				Vector3f S2 = S * f * weight * std::clamp(dotProduct(wi, n), 0.f, 1.f) / pdf;
+				Vector3f a = f * std::clamp(dotProduct(wi, n), 0.f, 1.f) / pdf;
+				L += S2;
 			}
 		}
 	}
@@ -173,15 +168,10 @@ Vector3f Scene::castRay(const Ray& ray, int depth, bool isPerfectSpecular) const
 				rr = 1;
 			}
 			Vector3f  matF = castRay(r, depth + 1, bxdf->IsDelat()) * f * std::fabs(dotProduct(wi, n)) / pdf / rr;
-			//if (!matF.isAllZero())
-				//printf("\nF:(%f,%f,%f),pdf:%f\n", matF.x, matF.y, matF.z, pdf);
-
 			P = matF;
 		}
 	}
-	if (depth == 1)
-		return L + P;
-	return P;
+	return L + P;
 }
 
 // 直接光照与间接光照分开
